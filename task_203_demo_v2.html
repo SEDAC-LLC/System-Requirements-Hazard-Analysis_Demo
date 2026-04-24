@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEDAC · MIL-STD 882E · Task 203 · SRHA · DEMO</title>
+<style>
+/* =============================================================================
+   SEDAC BRAND — Icon Mode (Palette A, Defense-facing)
+   Shared stylesheet for MIL-STD 882E Task Tools
+   SEDAC LLC · Science | Engineering | Design | Art | Craft · CAGE 18S33
+   v1.0 · 2026
+   WPA-declarative: no gradients, no rounded corners, no drop shadows.
+   ============================================================================= */
+
+:root{
+  /* ---- Palette A — Icon Mode (defense-facing) ---- */
+  --signal-cobalt:#1A3C8F;
+  --cobalt-dark:#122A66;
+  --cobalt-light:#D6DFF2;
+  --mission-red:#C41E2E;
+  --red-dark:#8E1420;
+  --red-light:#F5D3D7;
+  --amber-alert:#E8B820;
+  --amber-dark:#A88515;
+  --amber-light:#FBF1CE;
+  --field-white:#FFFFFF;
+  --blackout:#0D0D0D;
+  --ink-1:#1A1A1A;
+  --ink-2:#2E2E2E;
+  --ink-3:#4A4A4A;
+  --muted:#6E6E6E;
+  --muted-light:#9E9E9E;
+  --surface:#F4F4F0;
+  --surface-2:#EDEDE6;
+  --surface-3:#E2E2DA;
+  --border:#C8C8BE;
+  --border-light:#DDDDD5;
+
+  /* ---- Status ---- */
+  --rac-high:#8E1420;         /* RAC High → deep red */
+  --rac-serious:#C41E2E;      /* RAC Serious → mission red */
+  --rac-medium:#E8B820;       /* RAC Medium → amber */
+  --rac-low:#2E7D4F;          /* RAC Low → green (not part of brand — functional accent) */
+  --ok:#2E7D4F;
+  --ok-light:#D4E9DD;
+  --warn:#B77800;
+  --warn-light:#F5E5C0;
+  --err:#8E1420;
+  --err-light:#F5D3D7;
+
+  /* ---- Typography (WPA declarative) ---- */
+  --display:'Impact','Arial Black','Helvetica Neue Condensed Black',sans-serif;
+  --mono:'Courier New','Courier',monospace;
+  --body:Arial,Helvetica,sans-serif;
+}
+
+/* ---- RESET ---- */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--body);
+  background:var(--surface);
+  color:var(--blackout);
+  font-size:14px;
+  line-height:1.6;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ================================================================
+   01 · TOPBAR — hex-signal mark, task title, acronym subline
+   ================================================================ */
+#topbar{
+  background:var(--signal-cobalt);
+  color:var(--field-white);
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:0 28px;
+  height:64px;
+  border-bottom:4px solid var(--mission-red);
+  position:sticky;
+  top:0;
+  z-index:200;
+}
+#topbar .hex-mark{width:40px;height:40px;flex-shrink:0}
+#topbar .title-block{display:flex;flex-direction:column;line-height:1.1}
+#topbar h1{
+  font-family:var(--display);
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:0px;
+  text-transform:uppercase;
+}
+#topbar .acronym-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0px;
+  opacity:.75;
+  margin-top:3px;
+  text-transform:uppercase;
+}
+#topbar .spacer{flex:1}
+#topbar .task-badge{
+  font-family:var(--mono);
+  font-size:10px;
+  background:var(--mission-red);
+  color:var(--field-white);
+  padding:5px 12px;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  font-weight:bold;
+}
+#topbar .classification{
+  font-family:var(--mono);
+  font-size:10px;
+  border:1px solid rgba(255,255,255,.35);
+  padding:4px 10px;
+  letter-spacing:0px;
+  text-transform:uppercase;
+}
+#topbar .btn-export{
+  background:var(--amber-alert);
+  color:var(--blackout);
+  border:none;
+  padding:8px 18px;
+  font-family:var(--display);
+  font-size:12px;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  font-weight:900;
+  cursor:pointer;
+  transition:background .12s;
+}
+#topbar .btn-export:hover{background:var(--amber-dark);color:var(--field-white)}
+#topbar .btn-export:disabled{background:var(--muted-light);color:var(--muted);cursor:not-allowed}
+
+/* ---- App layout ---- */
+#app{max-width:1200px;margin:0 auto;padding:24px 24px 80px}
+
+/* ================================================================
+   02 · SECTION HEADERS — all caps, hard rule, section number
+   ================================================================ */
+.section-header{
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  margin:28px 0 14px;
+  padding-bottom:8px;
+  border-bottom:2px solid var(--signal-cobalt);
+}
+.section-header:first-child{margin-top:0}
+.section-header .sec-num{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:bold;
+  color:var(--mission-red);
+  letter-spacing:0px;
+}
+.section-header h2{
+  font-family:var(--display);
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  color:var(--blackout);
+}
+.section-header .sec-desc{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  margin-left:auto;
+  letter-spacing:0px;
+}
+
+/* ================================================================
+   03 · CARDS — flat, square edges, hard left border
+   ================================================================ */
+.card{
+  background:var(--field-white);
+  border:1px solid var(--border);
+  padding:18px 22px;
+  margin-bottom:18px;
+}
+.card.flag-cobalt{border-left:4px solid var(--signal-cobalt)}
+.card.flag-red{border-left:4px solid var(--mission-red)}
+.card.flag-amber{border-left:4px solid var(--amber-alert)}
+.card.dark{background:var(--blackout);color:var(--field-white);border-color:var(--blackout)}
+.card-title{
+  font-family:var(--mono);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0px;
+  color:var(--muted);
+  margin-bottom:12px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--border-light);
+  font-weight:bold;
+}
+
+/* ---- Diagonal hatch overlay motif (hero cards only) ---- */
+.hatch-overlay{
+  position:relative;
+}
+.hatch-overlay::before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:repeating-linear-gradient(
+    45deg,
+    transparent 0 4px,
+    rgba(26,60,143,.05) 4px 5px
+  );
+  pointer-events:none;
+}
+
+/* ================================================================
+   04 · UPLOAD GRID — drag-drop CSV slots
+   ================================================================ */
+.upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:760px){.upload-grid{grid-template-columns:1fr}}
+.upload-slot{
+  border:2px dashed var(--border);
+  padding:18px 16px;
+  text-align:center;
+  background:var(--surface);
+  cursor:pointer;
+  position:relative;
+  transition:border-color .15s,background .15s;
+}
+.upload-slot:hover{border-color:var(--signal-cobalt);background:var(--cobalt-light)}
+.upload-slot.has-file{border-color:var(--ok);background:var(--ok-light);border-style:solid}
+.upload-slot.has-error{border-color:var(--err);background:var(--err-light);border-style:solid}
+.upload-slot input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.slot-title{font-family:var(--mono);font-size:12px;font-weight:bold;color:var(--blackout);margin-bottom:4px;text-transform:uppercase;letter-spacing:0px}
+.slot-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:8px}
+.slot-status{font-family:var(--mono);font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:0px}
+.slot-status.ok{color:var(--ok)}
+.slot-status.err{color:var(--err)}
+.slot-status.ready{color:var(--muted)}
+
+/* ================================================================
+   05 · BUTTONS — WPA declarative, no rounded corners
+   ================================================================ */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--display);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  padding:9px 18px;
+  border:none;
+  cursor:pointer;
+  transition:all .12s;
+}
+.btn-primary{background:var(--signal-cobalt);color:var(--field-white)}
+.btn-primary:hover{background:var(--cobalt-dark)}
+.btn-primary:disabled{background:var(--muted-light);color:var(--muted);cursor:not-allowed}
+.btn-secondary{background:var(--surface-2);color:var(--blackout);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface-3)}
+.btn-danger{background:var(--mission-red);color:var(--field-white)}
+.btn-danger:hover{background:var(--red-dark)}
+.btn-ghost{
+  background:transparent;
+  color:var(--signal-cobalt);
+  border:1px solid var(--signal-cobalt);
+  font-size:10px;
+  padding:6px 12px;
+  letter-spacing:0px;
+}
+.btn-ghost:hover{background:var(--signal-cobalt);color:var(--field-white)}
+
+.action-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+/* ================================================================
+   06 · TABS
+   ================================================================ */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:16px}
+.tab-btn{
+  font-family:var(--display);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  padding:10px 18px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  margin-bottom:-2px;
+  transition:all .12s;
+}
+.tab-btn.active{color:var(--signal-cobalt);border-bottom-color:var(--mission-red)}
+.tab-btn:hover:not(.active){color:var(--blackout);background:var(--surface)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ================================================================
+   07 · ALERTS & BADGES
+   ================================================================ */
+.alert{
+  padding:12px 14px;
+  font-size:12px;
+  line-height:1.5;
+  margin-bottom:14px;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  border-left:4px solid;
+}
+.alert-info{background:var(--cobalt-light);color:var(--cobalt-dark);border-color:var(--signal-cobalt)}
+.alert-warn{background:var(--warn-light);color:var(--warn);border-color:var(--amber-dark)}
+.alert-ok{background:var(--ok-light);color:var(--ok);border-color:var(--ok)}
+.alert-danger{background:var(--err-light);color:var(--err);border-color:var(--err)}
+.alert-icon{
+  font-family:var(--mono);
+  font-weight:bold;
+  font-size:12px;
+  flex-shrink:0;
+}
+
+.badge{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:9px;
+  font-weight:bold;
+  padding:3px 8px;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  vertical-align:middle;
+}
+.badge-high{background:var(--rac-high);color:var(--field-white)}
+.badge-serious{background:var(--rac-serious);color:var(--field-white)}
+.badge-medium{background:var(--rac-medium);color:var(--blackout)}
+.badge-low{background:var(--rac-low);color:var(--field-white)}
+.badge-info{background:var(--signal-cobalt);color:var(--field-white)}
+.badge-gray{background:var(--border);color:var(--ink-3)}
+
+/* ================================================================
+   08 · TABLES — mono type, hard cobalt header
+   ================================================================ */
+.data-table,.val-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  font-family:var(--mono);
+}
+.data-table-wrap{overflow-x:auto;border:1px solid var(--border)}
+.data-table th,.val-table th{
+  background:var(--signal-cobalt);
+  color:var(--field-white);
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:bold;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  padding:8px 12px;
+  text-align:left;
+  white-space:nowrap;
+  border-right:1px solid var(--cobalt-dark);
+}
+.data-table th:last-child,.val-table th:last-child{border-right:none}
+.data-table td,.val-table td{
+  padding:7px 12px;
+  border-bottom:1px solid var(--border-light);
+  border-right:1px solid var(--border-light);
+  vertical-align:middle;
+}
+.data-table td:last-child,.val-table td:last-child{border-right:none}
+.data-table tr:nth-child(even) td{background:var(--surface)}
+.data-table tr:hover td,.val-table tr:hover td{background:var(--cobalt-light)}
+.val-table td:first-child{font-weight:bold;color:var(--blackout)}
+
+/* ================================================================
+   09 · META GRID — key/value blocks
+   ================================================================ */
+.meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:14px;border:1px solid var(--border)}
+@media(max-width:700px){.meta-grid{grid-template-columns:repeat(2,1fr)}}
+.meta-item{
+  background:var(--surface);
+  padding:10px 14px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.meta-item:last-child{border-right:none}
+.meta-item .m-label{
+  font-family:var(--mono);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:0px;
+  color:var(--muted);
+  margin-bottom:3px;
+  font-weight:bold;
+}
+.meta-item .m-val{
+  font-family:var(--mono);
+  font-size:14px;
+  font-weight:bold;
+  color:var(--blackout);
+}
+
+/* ================================================================
+   10 · PARAMETRIC MODEL — formula box, ConstraintBlock cards
+   ================================================================ */
+.formula-box{
+  background:var(--blackout);
+  color:var(--amber-alert);
+  padding:16px 20px;
+  font-family:var(--mono);
+  font-size:12px;
+  line-height:1.9;
+  margin-bottom:14px;
+  border-left:4px solid var(--amber-alert);
+}
+.formula-box .f-label{color:var(--amber-light);font-size:10px;text-transform:uppercase;letter-spacing:0px}
+.formula-box .f-eq{color:var(--field-white)}
+.formula-box .f-sub{color:#7EC8E3}
+.formula-box .f-num{color:var(--ok-light)}
+
+.cb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:14px}
+.cb-card{
+  border:1px solid var(--border);
+  padding:12px 14px;
+  background:var(--field-white);
+  border-top:3px solid var(--signal-cobalt);
+}
+.cb-card .cb-name{
+  font-family:var(--display);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:0px;
+  text-transform:uppercase;
+  color:var(--blackout);
+  margin-bottom:4px;
+}
+.cb-card .cb-io{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.6;
+}
+.cb-card .cb-io strong{color:var(--signal-cobalt);font-weight:bold}
+
+/* ================================================================
+   11 · RESULTS — headline metric cards
+   ================================================================ */
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.result-card{
+  background:var(--field-white);
+  border:1px solid var(--border);
+  padding:14px 16px;
+  border-top:4px solid var(--signal-cobalt);
+}
+.result-card .r-label{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0px;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+.result-card .r-val{
+  font-family:var(--display);
+  font-size:28px;
+  font-weight:900;
+  color:var(--blackout);
+  line-height:1;
+  letter-spacing:0px;
+}
+.result-card .r-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.result-card.flag-high{border-top-color:var(--rac-high)}
+.result-card.flag-high .r-val{color:var(--rac-high)}
+.result-card.flag-serious{border-top-color:var(--rac-serious)}
+.result-card.flag-serious .r-val{color:var(--rac-serious)}
+.result-card.flag-medium{border-top-color:var(--rac-medium)}
+.result-card.flag-medium .r-val{color:var(--amber-dark)}
+.result-card.flag-low{border-top-color:var(--rac-low)}
+.result-card.flag-low .r-val{color:var(--rac-low)}
+
+/* ================================================================
+   12 · RAC MATRIX — 4×5 visual
+   ================================================================ */
+.rac-matrix{border-collapse:collapse;font-family:var(--mono);font-size:11px;margin:10px 0}
+.rac-matrix th,.rac-matrix td{border:1px solid var(--border);padding:10px 14px;text-align:center}
+.rac-matrix th{background:var(--blackout);color:var(--field-white);font-size:10px;letter-spacing:0px;text-transform:uppercase}
+.rac-matrix .rac-axis{background:var(--surface-2);font-weight:bold;color:var(--blackout)}
+.rac-cell{font-weight:bold;text-transform:uppercase;letter-spacing:0px;cursor:default}
+.rac-cell.high{background:var(--rac-high);color:var(--field-white)}
+.rac-cell.serious{background:var(--rac-serious);color:var(--field-white)}
+.rac-cell.medium{background:var(--rac-medium);color:var(--blackout)}
+.rac-cell.low{background:var(--rac-low);color:var(--field-white)}
+.rac-cell.highlight{outline:3px solid var(--amber-alert);outline-offset:-3px}
+
+/* ================================================================
+   13 · HEATMAP — requirement × hazard trace
+   ================================================================ */
+.heatmap-wrap{overflow-x:auto}
+.heatmap-table{border-collapse:collapse;font-family:var(--mono);font-size:10px}
+.heatmap-table th{
+  padding:6px 8px;text-align:center;font-size:10px;font-weight:bold;
+  color:var(--field-white);background:var(--signal-cobalt);
+  border:1px solid var(--cobalt-dark);
+  letter-spacing:0px;
+  white-space:nowrap;
+}
+.heatmap-table th.axis{background:var(--blackout);min-width:100px;text-align:left;padding-left:12px}
+.heatmap-table td{
+  padding:6px 10px;text-align:center;border:1px solid var(--border-light);
+  font-weight:bold;min-width:36px;
+}
+.heatmap-table .hm-row-label{
+  text-align:left!important;background:var(--surface-2);color:var(--blackout);
+  font-size:10px;padding:6px 12px!important;min-width:110px;font-weight:bold;
+}
+.hm-0{background:var(--field-white);color:var(--muted-light)}
+.hm-1{background:var(--cobalt-light);color:var(--signal-cobalt)}
+.hm-2{background:var(--signal-cobalt);color:var(--field-white)}
+
+/* ================================================================
+   14 · LOG PANEL
+   ================================================================ */
+.log-panel{
+  background:var(--blackout);
+  padding:12px 16px;
+  font-family:var(--mono);
+  font-size:11px;
+  line-height:1.8;
+  max-height:180px;
+  overflow-y:auto;
+  color:#B0C4DE;
+}
+.log-ts{color:#606070}
+.log-ok{color:#7EC8E3}
+.log-warn{color:var(--amber-alert)}
+.log-err{color:#FF8080}
+
+/* ================================================================
+   15 · CHARTS
+   ================================================================ */
+.chart-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.chart-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+@media(max-width:820px){.chart-grid-2,.chart-grid-3{grid-template-columns:1fr}}
+.chart-card{
+  background:var(--field-white);
+  border:1px solid var(--border);
+  padding:16px 18px;
+  border-top:3px solid var(--signal-cobalt);
+}
+.chart-card .chart-title{
+  font-family:var(--mono);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0px;
+  color:var(--muted);
+  margin-bottom:12px;
+  font-weight:bold;
+}
+.chart-card canvas{max-height:280px}
+.chart-card.tall canvas{max-height:340px}
+
+/* ================================================================
+   16 · INSIGHTS
+   ================================================================ */
+.insight-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.insight-item{
+  padding:10px 14px;
+  font-size:12px;
+  line-height:1.55;
+  display:flex;gap:10px;
+  align-items:flex-start;
+  border-left:4px solid;
+}
+.insight-item.high{background:var(--err-light);border-color:var(--rac-high);color:var(--ink-1)}
+.insight-item.warn{background:var(--warn-light);border-color:var(--amber-dark);color:var(--ink-1)}
+.insight-item.info{background:var(--cobalt-light);border-color:var(--signal-cobalt);color:var(--cobalt-dark)}
+.insight-item.ok{background:var(--ok-light);border-color:var(--ok);color:var(--ink-1)}
+.insight-icon{font-family:var(--mono);font-weight:bold;flex-shrink:0;font-size:13px}
+.insight-item strong{color:var(--blackout)}
+
+/* ================================================================
+   17 · REPORT MODAL
+   ================================================================ */
+#report-modal{display:none;position:fixed;inset:0;background:rgba(13,13,13,.7);z-index:500;overflow-y:auto;padding:40px 20px}
+#report-modal.open{display:flex;align-items:flex-start;justify-content:center}
+#report-box{background:var(--field-white);width:100%;max-width:720px;margin:auto}
+#report-header{
+  background:var(--signal-cobalt);
+  padding:18px 24px;
+  display:flex;align-items:center;gap:14px;
+  border-bottom:4px solid var(--mission-red);
+  color:var(--field-white);
+}
+#report-header h2{font-family:var(--display);font-size:18px;letter-spacing:0px;text-transform:uppercase}
+#report-header .rh-sub{font-family:var(--mono);font-size:10px;opacity:.7;margin-top:2px;letter-spacing:0px}
+#report-header .rh-spacer{flex:1}
+#report-close{
+  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.35);
+  color:var(--field-white);
+  padding:6px 14px;
+  font-family:var(--display);font-size:11px;letter-spacing:0px;text-transform:uppercase;font-weight:900;
+  cursor:pointer;
+}
+#report-close:hover{background:rgba(255,255,255,.28)}
+
+#report-meta-form{padding:20px 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+#report-meta-form h3{
+  font-family:var(--display);font-size:12px;font-weight:900;
+  letter-spacing:0px;text-transform:uppercase;color:var(--muted);
+  margin-bottom:14px;
+}
+.rform-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:540px){.rform-grid{grid-template-columns:1fr}}
+.rform-field label{
+  display:block;font-family:var(--mono);font-size:10px;
+  text-transform:uppercase;letter-spacing:0px;color:var(--muted);
+  margin-bottom:4px;font-weight:bold;
+}
+.rform-field input,.rform-field textarea,.rform-field select{
+  width:100%;font-family:var(--body);font-size:13px;
+  padding:8px 10px;border:1px solid var(--border);
+  background:var(--field-white);color:var(--blackout);outline:none;
+}
+.rform-field input:focus,.rform-field textarea:focus,.rform-field select:focus{
+  border-color:var(--signal-cobalt);
+  box-shadow:none;
+}
+.rform-field textarea{resize:vertical;min-height:60px;font-family:var(--body)}
+
+.rform-actions{display:flex;gap:10px;padding:14px 24px;background:var(--field-white);border-top:1px solid var(--border)}
+
+/* ================================================================
+   18 · SENSITIVITY SLIDERS
+   ================================================================ */
+.sens-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:700px){.sens-grid{grid-template-columns:1fr 1fr}}
+.sens-row{background:var(--surface);border:1px solid var(--border);padding:10px 12px;border-left:3px solid var(--signal-cobalt)}
+.sens-row label{display:block;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0px;margin-bottom:6px;font-weight:bold}
+.sens-row .sens-inline{display:flex;align-items:center;gap:8px}
+.sens-row input[type=range]{flex:1;height:4px;-webkit-appearance:none;background:var(--border);outline:none}
+.sens-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--signal-cobalt);cursor:pointer;border-radius:0}
+.sens-row .sens-val{font-family:var(--mono);font-size:11px;font-weight:bold;min-width:28px;text-align:right;color:var(--signal-cobalt)}
+
+/* ================================================================
+   19 · SCROLLBAR
+   ================================================================ */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--surface-2)}
+::-webkit-scrollbar-thumb{background:var(--border)}
+::-webkit-scrollbar-thumb:hover{background:var(--muted-light)}
+
+/* ================================================================
+   20 · PRINT
+   ================================================================ */
+@media print{
+  #topbar,#app .no-print{display:none!important}
+  body{background:#fff}
+  .card{border:1px solid #000;box-shadow:none}
+}
+
+
+/* ===== DEMO MODE additions ===== */
+#demo-banner{
+  background:var(--mission-red); color:#fff;
+  font-family:"Impact","Arial Black",sans-serif;
+  letter-spacing:0px; text-transform:uppercase;
+  padding:8px 18px; font-size:13px;
+  border-bottom:3px solid var(--amber-alert);
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+}
+#demo-banner .pill{
+  background:#fff; color:var(--mission-red);
+  font-family:"Courier New",monospace; font-size:10px;
+  padding:2px 8px; letter-spacing:0px; font-weight:bold;
+}
+#demo-banner .spacer{flex:1}
+#demo-banner a.cta{
+  color:#fff; background:transparent; border:2px solid #fff;
+  padding:4px 12px; font-size:11px; text-decoration:none;
+  font-family:"Courier New",monospace; letter-spacing:0px;
+}
+#demo-banner a.cta:hover{background:#fff; color:var(--mission-red)}
+.demo-locked-tile{
+  border:2px solid var(--signal-cobalt); background:#F5F6FA;
+  padding:18px 22px; display:grid;
+  grid-template-columns:120px 1fr auto; gap:18px; align-items:center;
+}
+.demo-locked-tile .tile-badge{
+  background:var(--signal-cobalt); color:#fff;
+  font-family:"Impact","Arial Black",sans-serif;
+  text-align:center; padding:14px 8px; letter-spacing:0px;
+}
+.demo-locked-tile .tile-badge .big{font-size:22px; display:block; line-height:1}
+.demo-locked-tile .tile-badge .small{font-size:9px; display:block; margin-top:4px}
+.demo-locked-tile .tile-body h3{
+  font-family:"Impact","Arial Black",sans-serif;
+  font-size:15px; letter-spacing:0px; margin:0 0 4px 0;
+  text-transform:uppercase;
+}
+.demo-locked-tile .tile-body p{
+  margin:0; font-family:Arial,sans-serif; font-size:12px;
+  color:var(--blackout);
+}
+.demo-locked-tile .tile-body .stats{
+  margin-top:6px; font-family:"Courier New",monospace; font-size:10px;
+  color:var(--muted); letter-spacing:0px;
+}
+.demo-locked-tile .tile-cta{
+  font-family:"Courier New",monospace; font-size:10px;
+  color:var(--muted); text-align:right; letter-spacing:0px;
+}
+.demo-locked-tile .tile-cta .lock{
+  display:inline-block; font-size:18px; color:var(--amber-alert);
+  margin-bottom:4px;
+}
+.btn.btn-locked{
+  background:#E0E0DA; color:var(--muted);
+  border-color:#C8C8BE; cursor:not-allowed;
+}
+.btn.btn-locked:hover{background:#E0E0DA}
+.btn.btn-fullversion{
+  background:var(--mission-red); color:#fff;
+  border-color:var(--mission-red);
+  font-family:"Impact","Arial Black",sans-serif;
+  letter-spacing:0px;
+}
+.btn.btn-fullversion:hover{background:#8E1420}
+#cta-modal{
+  display:none; position:fixed; inset:0; background:rgba(13,13,13,.75);
+  z-index:500; align-items:center; justify-content:center;
+}
+#cta-modal.open{display:flex}
+#cta-box{
+  background:#fff; width:min(560px,92vw); border:3px solid var(--signal-cobalt);
+  padding:28px 32px; font-family:Arial,sans-serif;
+}
+#cta-box h2{
+  font-family:"Impact","Arial Black",sans-serif;
+  letter-spacing:0px; margin:0 0 10px 0;
+  color:var(--signal-cobalt); font-size:22px;
+}
+#cta-box .ribbon{
+  background:var(--mission-red); color:#fff;
+  font-family:"Courier New",monospace; font-size:10px;
+  letter-spacing:0px; padding:3px 9px; display:inline-block;
+  margin-bottom:10px;
+}
+#cta-box p{font-size:13px; line-height:1.55; margin:8px 0}
+#cta-box .contact-grid{
+  margin-top:14px; padding-top:14px;
+  border-top:2px solid var(--blackout);
+  font-family:"Courier New",monospace; font-size:11px;
+}
+#cta-box .contact-grid div{margin:3px 0}
+#cta-box .contact-grid strong{color:var(--signal-cobalt)}
+#cta-box .actions{
+  margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;
+}
+
+
+/* ===== DEMO V2 additions ===== */
+#demo-status{
+  font-family:"Courier New",monospace; font-size:12px;
+  padding:10px 18px; display:flex; align-items:center; gap:10px;
+  border-top:2px solid var(--border); border-bottom:2px solid var(--border);
+  margin:0 0 14px 0; letter-spacing:0px; flex-wrap:wrap;
+}
+#demo-status .dot{
+  display:inline-block; width:10px; height:10px;
+  border:2px solid currentColor; background:currentColor;
+}
+#demo-status.running{background:#FFF7DA; color:#8B6914}
+#demo-status.running .dot{animation:pulse 1s ease-in-out infinite}
+#demo-status.ready{background:#E8F4EC; color:#2E7D4F; border-left:4px solid #2E7D4F}
+#demo-status.error{background:#FEE7EA; color:var(--mission-red); border-left:4px solid var(--mission-red); font-weight:bold}
+#demo-status.info{background:#E8EDFA; color:var(--signal-cobalt)}
+#demo-status a{color:inherit; text-decoration:underline; font-weight:bold}
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.35} }
+
+.demo-howto{margin-bottom:16px}
+.demo-howto .howto-header{
+  display:flex; align-items:baseline; gap:14px;
+  margin-bottom:10px; padding-bottom:8px;
+  border-bottom:2px solid var(--amber-alert);
+  flex-wrap:wrap;
+}
+.demo-howto .howto-badge{
+  font-family:"Impact","Arial Black",sans-serif;
+  background:var(--amber-alert); color:var(--blackout);
+  padding:4px 10px; letter-spacing:0px; font-size:13px;
+}
+.demo-howto .howto-tag{
+  font-family:"Courier New",monospace; font-size:11px;
+  color:var(--muted); letter-spacing:0px;
+}
+.demo-howto .howto-steps{
+  margin:0; padding-left:22px;
+  font-family:Arial,sans-serif; font-size:13px; line-height:1.55;
+}
+.demo-howto .howto-steps li{margin:6px 0}
+.demo-howto .howto-btn-ex{
+  font-family:"Courier New",monospace; font-size:11px;
+  background:var(--blackout); color:var(--field-white);
+  padding:1px 6px; letter-spacing:0px;
+}
+.demo-howto .howto-note{
+  margin-top:10px; padding-top:10px;
+  border-top:1px dashed var(--border);
+  font-family:Arial,sans-serif; font-size:11px;
+  color:var(--muted);
+}
+
+.demo-v2-actions{
+  gap:10px; align-items:stretch; padding-top:6px;
+}
+.btn.btn-xl{
+  min-height:58px; padding:6px 18px;
+  display:flex; align-items:center; gap:12px;
+  text-align:left; line-height:1.1;
+}
+.btn.btn-xl .btn-icon{
+  font-size:26px; line-height:1;
+  min-width:32px; text-align:center;
+}
+.btn.btn-xl .btn-text{display:flex; flex-direction:column}
+.btn.btn-xl .btn-title{
+  font-family:"Impact","Arial Black",sans-serif;
+  letter-spacing:0px; font-size:13px;
+}
+.btn.btn-xl .btn-sub{
+  font-family:"Courier New",monospace;
+  font-size:9px; letter-spacing:0px; opacity:.85;
+  text-transform:uppercase; margin-top:2px;
+}
+.btn.btn-primary.btn-xl{background:var(--signal-cobalt)}
+.btn.btn-primary.btn-xl:hover{background:#12306F}
+
+.locked-group{
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+  padding:6px 10px; border:1px dashed var(--muted);
+  background:#FAFAF7;
+}
+.locked-group .locked-label{
+  font-family:"Courier New",monospace; font-size:9px;
+  color:var(--muted); letter-spacing:0px;
+  text-transform:uppercase;
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- =========================================================================
+     DEMO BANNER
+     ========================================================================= -->
+<div id="demo-banner">
+  <span class="pill">DEMO</span>
+  <span>Visualization Preview · Live dataset locked to UAS-GCS-117 reference program</span>
+  <div class="spacer"></div>
+  <a class="cta" href="#" onclick="openCtaModal();return false;">Request Full Version ▸</a>
+</div>
+
+<!-- =========================================================================
+     TOPBAR
+     ========================================================================= -->
+<div id="topbar">
+  <svg class="hex-mark" viewBox="0 0 60 60" width="40" height="40" aria-label="SEDAC hex-signal mark" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="30,3 54,16.5 54,43.5 30,57 6,43.5 6,16.5" fill="none" stroke="#E8B820" stroke-width="2.5"/>
+    <circle cx="14" cy="30" r="3.5" fill="#E8B820"/>
+    <line x1="18" y1="30" x2="36" y2="30" stroke="#E8B820" stroke-width="3" stroke-linecap="square"/>
+    <line x1="28" y1="20" x2="44" y2="30" stroke="#E8B820" stroke-width="3" stroke-linecap="square"/>
+    <line x1="28" y1="40" x2="44" y2="30" stroke="#E8B820" stroke-width="3" stroke-linecap="square"/>
+  </svg>
+  <div class="title-block">
+    <h1>SEDAC · MIL-STD 882E</h1>
+    <span class="acronym-sub">Science · Engineering · Design · Art · Craft</span>
+  </div>
+  <span class="task-badge">Task 203 · SRHA</span>
+  <div class="spacer"></div>
+  <span class="classification" id="top-class">UNMARKED</span>
+  <button class="btn-export btn-fullversion" id="btn-export" onclick="openCtaModal()">◆ Request Full Version</button>
+</div>
+
+<div id="app">
+
+<!-- =========================================================================
+     INTRO
+     ========================================================================= -->
+<div class="alert alert-info">
+  <span class="alert-icon">§</span>
+  <div>
+    <strong>Task 203 — System Requirements Hazard Analysis (SRHA) · Interactive Demo.</strong>
+    Per MIL-STD 882E, SRHA examines system requirements to ensure they adequately address identified
+    hazards and that design / derived safety requirements flow from the hazard analyses. This demo
+    is pre-loaded with the <strong>UAS-GCS-117</strong> reference dataset — drill into the heatmap, move the
+    sensitivity sliders, read the automated findings. Uploads, PDF export, and custom-program runs
+    are available in the full version.
+  </div>
+</div>
+
+<!-- =========================================================================
+     DEMO STATUS STRIP (live)
+     ========================================================================= -->
+<div id="demo-status" class="demo-status running" role="status" aria-live="polite">
+  <span class="dot"></span>Initializing demo…
+</div>
+
+<!-- =========================================================================
+     HOW TO USE THIS DEMO (always visible)
+     ========================================================================= -->
+<div class="card flag-amber demo-howto">
+  <div class="howto-header">
+    <span class="howto-badge">▶ HOW TO USE THIS DEMO</span>
+    <span class="howto-tag">No signup · No upload · Runs entirely in your browser</span>
+  </div>
+  <ol class="howto-steps">
+    <li><strong>The demo runs automatically</strong> on page load. When the status bar above shows <em>DEMO READY</em>, scroll down and every section is populated.</li>
+    <li><strong>Explore the visualizations</strong> in §05 — hover over bars, read the trace-matrix heatmap, check the coverage doughnut.</li>
+    <li><strong>Drill into a requirement</strong> in §06. Pick any REQ-### from the dropdown to see its traced hazards, RAC roll-up, and control status.</li>
+    <li><strong>Move the sensitivity sliders</strong> in §08. Each slider re-ranks all hazards live so you can test a program-wide risk-reduction sweep.</li>
+    <li><strong>Read the automated findings</strong> in §09 — these are the rule-based insights the full-version PDF renders.</li>
+    <li><strong>Need to start over?</strong> Click the big red <span class="howto-btn-ex">↻ Reset Demo View</span> button in the Data Input card. It re-loads the sample, re-runs the analysis, and scrolls you back to the top.</li>
+    <li><strong>Want to re-analyze without resetting sliders?</strong> Click <span class="howto-btn-ex">⚙ Re-run SRHA</span>.</li>
+  </ol>
+  <div class="howto-note">
+    The blue and red <em>upload</em> buttons in the next section, plus the <em>Export Report</em> buttons, are locked in the demo. Click <strong>◆ Request Full Version</strong> (top right) for the unlocked build.
+  </div>
+</div>
+
+<!-- =========================================================================
+     §01  DATA INPUT
+     ========================================================================= -->
+<div class="section-header">
+  <span class="sec-num">01</span>
+  <h2>Data Input</h2>
+  <span class="sec-desc">Upload CSVs or load sample · DataIngestor block</span>
+</div>
+<div class="card flag-cobalt">
+  <div class="demo-locked-tile">
+    <div class="tile-badge">
+      <span class="big">UAS</span>
+      <span class="small">GCS-117</span>
+    </div>
+    <div class="tile-body">
+      <h3>Demo Dataset · Tactical Ground Control Station Mk-II</h3>
+      <p>A reference SRHA dataset modeled on a notional UAS ground control station program. In the full version, you upload your own <code>requirements.csv</code>, <code>hazards.csv</code>, and <code>project.csv</code> — but this live demo runs entirely on the bundled sample so you can see every analysis, chart, and drilldown without sharing any data.</p>
+      <div class="stats">21 requirements · 12 hazards · 18 safety-classified · 4 subsystems · classification UNCLASSIFIED (demo)</div>
+    </div>
+    <div class="tile-cta">
+      <span class="lock">◎</span><br>
+      DATASET LOCKED<br>(DEMO MODE)
+    </div>
+  </div>
+  <div class="action-row demo-v2-actions">
+    <button class="btn btn-danger btn-xl" id="btn-run" onclick="runAnalysis()">
+      <span class="btn-icon">⚙</span>
+      <span class="btn-text"><span class="btn-title">Re-run SRHA</span><span class="btn-sub">Re-analyze in place</span></span>
+    </button>
+    <button class="btn btn-primary btn-xl" onclick="resetDemo()">
+      <span class="btn-icon">↻</span>
+      <span class="btn-text"><span class="btn-title">Reset Demo View</span><span class="btn-sub">Full reload · scroll to top</span></span>
+    </button>
+    <span style="flex:1"></span>
+    <div class="locked-group">
+      <div class="locked-label">FULL VERSION:</div>
+      <button class="btn btn-locked" onclick="openCtaModal()" title="Available in full version">↑ upload requirements.csv</button>
+      <button class="btn btn-locked" onclick="openCtaModal()" title="Available in full version">↑ upload hazards.csv</button>
+      <button class="btn btn-locked" onclick="openCtaModal()" title="Available in full version">↑ upload project.csv</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §02  PARSE & VALIDATE
+     ========================================================================= -->
+<div id="val-panel">
+  <div class="section-header">
+    <span class="sec-num">02</span>
+    <h2>Parse & Validate</h2>
+    <span class="sec-desc">Schema check · foreign key integrity</span>
+  </div>
+  <div class="card">
+    <div class="meta-grid" id="meta-grid"></div>
+    <div id="val-alerts"></div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="preview" onclick="switchTab(this)">Data Preview</button>
+      <button class="tab-btn" data-tab="schema" onclick="switchTab(this)">Schema Check</button>
+      <button class="tab-btn" data-tab="log" onclick="switchTab(this)">Parse Log</button>
+    </div>
+    <div class="tab-pane active" id="tab-preview">
+      <div class="tabs" style="border-bottom:1px solid var(--border)">
+        <button class="tab-btn active" data-subtab="preview-req" onclick="switchSubTab(this)" style="font-size:9px">Requirements</button>
+        <button class="tab-btn" data-subtab="preview-haz" onclick="switchSubTab(this)" style="font-size:9px">Hazards</button>
+        <button class="tab-btn" data-subtab="preview-prj" onclick="switchSubTab(this)" style="font-size:9px">Project</button>
+      </div>
+      <div class="tab-pane active" id="preview-req"><div class="data-table-wrap"><table class="data-table" id="tbl-req"></table></div></div>
+      <div class="tab-pane" id="preview-haz"><div class="data-table-wrap"><table class="data-table" id="tbl-haz"></table></div></div>
+      <div class="tab-pane" id="preview-prj"><div class="data-table-wrap"><table class="data-table" id="tbl-prj"></table></div></div>
+    </div>
+    <div class="tab-pane" id="tab-schema">
+      <table class="val-table"><thead><tr><th>File</th><th>Column</th><th>Required</th><th>Status</th></tr></thead><tbody id="schema-body"></tbody></table>
+    </div>
+    <div class="tab-pane" id="tab-log">
+      <div class="log-panel" id="log-panel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §03  PARAMETRIC MODEL
+     ========================================================================= -->
+<div id="model-panel">
+  <div class="section-header">
+    <span class="sec-num">03</span>
+    <h2>Parametric Model</h2>
+    <span class="sec-desc">SysML ConstraintBlocks · SRHA analysis pipeline</span>
+  </div>
+  <div class="card flag-amber hatch-overlay">
+    <div class="formula-box">
+<span class="f-label">// ConstraintBlock: RequirementHazardTrace</span><br>
+<span class="f-eq">traceMatrix[r,h] =</span> <span class="f-sub">1 if h ∈ r.traced_hazard_ids else 0</span><br>
+<span class="f-eq">coverageByReq[r] =</span> <span class="f-num">Σ<sub>h</sub> traceMatrix[r,h]</span><br>
+<span class="f-eq">coverageByHazard[h] =</span> <span class="f-num">Σ<sub>r</sub> traceMatrix[r,h] &middot; r.is_safety</span><br><br>
+<span class="f-label">// ConstraintBlock: RACRollupByRequirement</span><br>
+<span class="f-eq">maxInitialRAC[r] =</span> <span class="f-sub">max<sub>h∈traced(r)</sub> rac(h.sev_init, h.prob_init)</span><br>
+<span class="f-eq">racReduction[r] =</span> <span class="f-num">rank(maxInitialRAC[r]) − rank(maxResidualRAC[r])</span><br><br>
+<span class="f-label">// ConstraintBlock: GapAnalysis</span><br>
+<span class="f-eq">uncovered =</span> <span class="f-sub">{h : coverageByHazard[h] = 0 ∧ rac_initial(h) ≥ Medium}</span><br>
+<span class="f-eq">orphans =</span> <span class="f-sub">{r : r.is_safety ∧ coverageByReq[r] = 0}</span><br>
+<span class="f-eq">gapRiskIndex =</span> <span class="f-num">Σ<sub>h∈uncovered</sub> rank(rac_initial(h)) / Σ<sub>all h</sub> rank(rac_initial(h))</span>
+    </div>
+    <div class="cb-grid">
+      <div class="cb-card">
+        <div class="cb-name">RequirementHazardTrace</div>
+        <div class="cb-io"><strong>in:</strong> Requirement, Hazard<br><strong>out:</strong> traceMatrix, coverage</div>
+      </div>
+      <div class="cb-card">
+        <div class="cb-name">SafetyReqClassifier</div>
+        <div class="cb-io"><strong>in:</strong> Requirement<br><strong>out:</strong> isSafety, derivCategory</div>
+      </div>
+      <div class="cb-card">
+        <div class="cb-name">RACRollupByRequirement</div>
+        <div class="cb-io"><strong>in:</strong> traceMatrix, Hazard.RAC<br><strong>out:</strong> maxInit, maxResid, Δ</div>
+      </div>
+      <div class="cb-card">
+        <div class="cb-name">GapAnalysis</div>
+        <div class="cb-io"><strong>in:</strong> coverageByHazard<br><strong>out:</strong> uncovered, orphans, GRI</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §04  RESULTS
+     ========================================================================= -->
+<div id="results-panel">
+  <div class="section-header">
+    <span class="sec-num">04</span>
+    <h2>Analysis Results</h2>
+    <span class="sec-desc">SRHA roll-up and coverage</span>
+  </div>
+  <div class="result-grid" id="result-grid"></div>
+  <div class="card">
+    <div class="card-title">Summary statistics</div>
+    <table class="val-table"><thead><tr><th>Metric</th><th>Value</th><th>Detail</th></tr></thead>
+      <tbody id="summary-body"></tbody>
+    </table>
+    <div class="action-row" style="margin-top:14px">
+      <button class="btn btn-ghost" onclick="exportJSON()">↓ Export JSON (analysis)</button>
+      <button class="btn btn-ghost" onclick="exportTraceCSV()">↓ Export CSV (trace matrix)</button>
+      <button class="btn btn-ghost" onclick="exportReqCoverageCSV()">↓ Export CSV (req coverage)</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §05  VISUALIZATIONS
+     ========================================================================= -->
+<div id="viz-panel">
+  <div class="section-header">
+    <span class="sec-num">05</span>
+    <h2>Visualizations</h2>
+    <span class="sec-desc">Chart.js · interactive</span>
+  </div>
+  <div class="chart-grid-2">
+    <div class="chart-card tall">
+      <div class="chart-title">RAC distribution across hazards — initial vs residual</div>
+      <canvas id="chart-rac"></canvas>
+    </div>
+    <div class="chart-card tall">
+      <div class="chart-title">Requirement coverage — safety vs non-safety</div>
+      <canvas id="chart-coverage"></canvas>
+    </div>
+  </div>
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">Top requirements by initial-RAC exposure</div>
+      <canvas id="chart-topreq"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Hazard phase profile</div>
+      <canvas id="chart-phase"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Requirement × Hazard trace matrix (0 = no trace, 1 = traced, 2 = safety trace)</div>
+    <div class="heatmap-wrap" id="heatmap-wrap"></div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §06  REQUIREMENT DRILLDOWN
+     ========================================================================= -->
+<div id="drill-panel">
+  <div class="section-header">
+    <span class="sec-num">06</span>
+    <h2>Requirement Drilldown</h2>
+    <span class="sec-desc">Per-requirement hazard trace and RAC roll-up</span>
+  </div>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <label style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0px">Select requirement:</label>
+      <select id="req-select" onchange="renderDrilldown()" style="font-family:var(--mono);font-size:12px;padding:6px 10px;border:1px solid var(--border);background:#fff;min-width:340px"></select>
+    </div>
+    <div id="drill-content"></div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §07  GAP ANALYSIS
+     ========================================================================= -->
+<div id="gap-panel">
+  <div class="section-header">
+    <span class="sec-num">07</span>
+    <h2>Gap Analysis</h2>
+    <span class="sec-desc">Uncovered hazards &amp; orphan safety requirements</span>
+  </div>
+  <div class="card flag-red">
+    <div class="card-title">Uncovered hazards — initial RAC ≥ Medium with no safety requirement trace</div>
+    <div class="data-table-wrap"><table class="data-table" id="tbl-uncovered"></table></div>
+  </div>
+  <div class="card flag-amber">
+    <div class="card-title">Orphan safety requirements — is_safety = true but no hazard traced</div>
+    <div class="data-table-wrap"><table class="data-table" id="tbl-orphan"></table></div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §08  SENSITIVITY
+     ========================================================================= -->
+<div id="sens-panel">
+  <div class="section-header">
+    <span class="sec-num">08</span>
+    <h2>Sensitivity</h2>
+    <span class="sec-desc">Adjust severity/probability margin to explore RAC changes</span>
+  </div>
+  <div class="card">
+    <div class="alert alert-info">
+      <span class="alert-icon">§</span>
+      <span>Decrement residual severity/probability by one level across all hazards to simulate a program-wide risk reduction sweep. Results update live.</span>
+    </div>
+    <div class="sens-grid">
+      <div class="sens-row">
+        <label>Severity reduction (levels)</label>
+        <div class="sens-inline">
+          <input type="range" id="sens-sev" min="0" max="2" step="1" value="0" oninput="applySensitivity()">
+          <span class="sens-val" id="sens-sev-val">0</span>
+        </div>
+      </div>
+      <div class="sens-row">
+        <label>Probability reduction (levels)</label>
+        <div class="sens-inline">
+          <input type="range" id="sens-prob" min="0" max="2" step="1" value="0" oninput="applySensitivity()">
+          <span class="sens-val" id="sens-prob-val">0</span>
+        </div>
+      </div>
+      <div class="sens-row">
+        <label>Residual effectiveness uplift</label>
+        <div class="sens-inline">
+          <input type="range" id="sens-eff" min="0" max="100" step="5" value="0" oninput="applySensitivity()">
+          <span class="sens-val" id="sens-eff-val">0%</span>
+        </div>
+      </div>
+    </div>
+    <div class="data-table-wrap"><table class="data-table" id="tbl-sens"></table></div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     §09  AUTOMATED INSIGHTS
+     ========================================================================= -->
+<div id="insights-panel">
+  <div class="section-header">
+    <span class="sec-num">09</span>
+    <h2>Automated Insights</h2>
+    <span class="sec-desc">Rule-based findings</span>
+  </div>
+  <div class="card">
+    <ul class="insight-list" id="insight-list"></ul>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+
+<!-- =========================================================================
+     REPORT MODAL
+     ========================================================================= -->
+<div id="report-modal" role="dialog" aria-modal="true">
+  <div id="report-box">
+    <div id="report-header">
+      <svg viewBox="0 0 60 60" width="34" height="34" aria-label="SEDAC">
+        <polygon points="30,3 54,16.5 54,43.5 30,57 6,43.5 6,16.5" fill="none" stroke="#E8B820" stroke-width="2.5"/>
+        <circle cx="14" cy="30" r="3.5" fill="#E8B820"/>
+        <line x1="18" y1="30" x2="36" y2="30" stroke="#E8B820" stroke-width="3" stroke-linecap="square"/>
+        <line x1="28" y1="20" x2="44" y2="30" stroke="#E8B820" stroke-width="3" stroke-linecap="square"/>
+        <line x1="28" y1="40" x2="44" y2="30" stroke="#E8B820" stroke-width="3" stroke-linecap="square"/>
+      </svg>
+      <div>
+        <h2>Task 203 · SRHA Report</h2>
+        <div class="rh-sub">Generate MIL-STD 882E deliverable</div>
+      </div>
+      <div class="rh-spacer"></div>
+      <button id="report-close" onclick="closeReportModal()">Close</button>
+    </div>
+    <div id="report-meta-form">
+      <h3>Deliverable Metadata</h3>
+      <div class="rform-grid">
+        <div class="rform-field"><label>Program ID</label><input id="rm-program" value="DEMO-001"></div>
+        <div class="rform-field"><label>System name</label><input id="rm-system" value="Demonstration System"></div>
+        <div class="rform-field"><label>Contractor</label><input id="rm-contractor" value="SEDAC LLC"></div>
+        <div class="rform-field"><label>Contract no.</label><input id="rm-contract" value="—"></div>
+        <div class="rform-field"><label>Classification</label>
+          <select id="rm-class">
+            <option>UNMARKED</option><option>UNCLASSIFIED</option>
+            <option>CUI</option><option>CONFIDENTIAL</option>
+            <option>SECRET</option>
+          </select>
+        </div>
+        <div class="rform-field"><label>Preparer</label><input id="rm-preparer" placeholder="Analyst name"></div>
+        <div class="rform-field"><label>Approver</label><input id="rm-approver" placeholder="Approver name"></div>
+        <div class="rform-field"><label>Date</label><input id="rm-date" type="date"></div>
+      </div>
+    </div>
+    <div class="rform-actions">
+      <button class="btn btn-primary" onclick="generatePDF()">◆ Generate PDF</button>
+      <button class="btn btn-secondary" onclick="exportJSON()">↓ Download JSON only</button>
+      <span style="flex:1"></span>
+      <span id="pdf-status" style="font-family:var(--mono);font-size:11px;color:var(--muted)"></span>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* =============================================================================
+   TASK 203 · SYSTEM REQUIREMENTS HAZARD ANALYSIS (SRHA)
+   Self-contained JS — all analysis runs in-browser.
+   PDF export POSTs analysis JSON to /task_203/report.pdf (Python backend).
+   ============================================================================= */
+
+/* ------- MIL-STD 882E RAC matrix (mirrors core.py exactly) ------- */
+const RAC = {
+  I:   {A:"High",    B:"High",    C:"Serious", D:"Medium", E:"Low"},
+  II:  {A:"High",    B:"Serious", C:"Medium",  D:"Low",    E:"Low"},
+  III: {A:"Serious", B:"Medium",  C:"Medium",  D:"Low",    E:"Low"},
+  IV:  {A:"Medium",  B:"Low",     C:"Low",     D:"Low",    E:"Low"},
+};
+const RAC_RANK = {Low:1, Medium:2, Serious:3, High:4};
+const SEV_ORDER = ["I","II","III","IV"];
+const PROB_ORDER = ["A","B","C","D","E"];
+const SEV_NAME = {I:"Catastrophic",II:"Critical",III:"Marginal",IV:"Negligible"};
+const PROB_NAME = {A:"Frequent",B:"Probable",C:"Occasional",D:"Remote",E:"Improbable"};
+function rac(s,p){ return (RAC[s]||{})[p] || "Low"; }
+function decrSev(s,n){ let i=SEV_ORDER.indexOf(s); i=Math.min(3,i+n); return SEV_ORDER[i]; }
+function decrProb(p,n){ let i=PROB_ORDER.indexOf(p); i=Math.min(4,i+n); return PROB_ORDER[i]; }
+const RAC_COLOR = {High:"#8E1420",Serious:"#C41E2E",Medium:"#E8B820",Low:"#2E7D4F"};
+
+/* ------- Global model state ------- */
+const MODEL = {
+  reqRows:null, hazRows:null, prjRows:null,
+  reqs:[], hazards:[], project:null,
+  analysis:null,
+  charts:{},
+  log:[],
+};
+
+/* ------- CSV parser ------- */
+function parseCSV(text){
+  text = text.replace(/^\uFEFF/,"");
+  const lines = text.replace(/\r\n/g,"\n").split("\n").filter(l=>l.trim().length);
+  if (lines.length < 1) return {headers:[], rows:[]};
+  // naive but tolerant — no embedded commas in quotes (our schemas use | for lists)
+  const headers = lines[0].split(",").map(h=>h.trim());
+  const rows = [];
+  for (let i=1;i<lines.length;i++){
+    const vals = lines[i].split(",").map(v=>v.trim());
+    if (vals.length !== headers.length) continue;
+    const r = {}; headers.forEach((h,j)=>r[h]=vals[j]); rows.push(r);
+  }
+  return {headers, rows};
+}
+
+function splitList(s){ if(!s) return []; return String(s).replace(/;/g,"|").split("|").map(x=>x.trim()).filter(x=>x); }
+
+/* ------- Demo v2: visible status + error reporting ------- */
+function setDemoStatus(kind, html){
+  /* kind ∈ {ready, running, error, info}. Writes into #demo-status. */
+  const el = document.getElementById("demo-status");
+  if (!el) return;
+  el.className = "demo-status " + kind;
+  el.innerHTML = html;
+}
+function showDemoError(msg){
+  console.error("[DEMO]", msg);
+  setDemoStatus("error",
+    `<span class="dot"></span><strong>Demo error:</strong> ${esc(msg)}`);
+}
+
+/* ------- XSS-safe HTML escape helper (data-driven content only) ------- */
+function esc(s){
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+/* ------- Logger ------- */
+function log(msg, kind=""){
+  const ts = new Date().toLocaleTimeString("en-US",{hour12:false});
+  MODEL.log.push({ts,msg,kind});
+  const el = document.getElementById("log-panel");
+  if (el){
+    const d = document.createElement("div");
+    d.innerHTML = `<span class="log-ts">[${ts}]</span> <span${kind?` class="log-${kind}"`:""}>${esc(msg)}</span>`;
+    el.appendChild(d); el.scrollTop = el.scrollHeight;
+  }
+}
+
+/* ------- Upload handlers ------- */
+function handleUpload(kind, input){
+  /* DEMO MODE: uploads are disabled. Kept as a stub so any orphan UI references
+     are inert. Opens the Request-Full-Version CTA instead. */
+  if (input && input.value) input.value = "";
+  openCtaModal();
+}
+
+function refreshRunButton(){
+  /* DEMO MODE: sample is always loaded, so the Run button is always live. */
+  const btn = document.getElementById("btn-run");
+  if (btn) btn.disabled = false;
+}
+
+function clearAll(){
+  /* DEMO MODE: clearAll is redefined as resetDemo() — we never go to an empty
+     state because the sample always loads. Kept for any callers. */
+  resetDemo();
+}
+function resetDemo(){
+  setDemoStatus("running", `<span class="dot"></span>Resetting demo…`);
+  Object.values(MODEL.charts).forEach(c=>{ try{c.destroy?.()}catch(_){} });
+  MODEL.charts = {};
+  MODEL.log = [];
+  const logEl = document.getElementById("log-panel"); if (logEl) logEl.innerHTML = "";
+  /* Reset sensitivity sliders to defaults */
+  ["sens-sev","sens-prob","sens-eff"].forEach((id,i)=>{
+    const el = document.getElementById(id); if (el) el.value = "0";
+  });
+  try {
+    loadSample();
+    runAnalysis();
+    /* Scroll back to the top so the user sees a clean fresh view */
+    if (typeof window.scrollTo === "function") window.scrollTo({top: 0, behavior: "smooth"});
+  } catch (e) {
+    showDemoError(`Reset failed: ${e.message}. Please refresh the page.`);
+  }
+}
+
+function downloadTemplate(name){
+  /* DEMO MODE: template downloads are gated behind the full version. */
+  openCtaModal();
+}
+
+/* ------- Tabs ------- */
+function switchTab(btn){
+  const tab = btn.dataset.tab;
+  btn.parentElement.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  btn.parentElement.parentElement.querySelectorAll(":scope > .tab-pane").forEach(p=>p.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+}
+function switchSubTab(btn){
+  const tab = btn.dataset.subtab;
+  btn.parentElement.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  btn.parentElement.parentElement.querySelectorAll(":scope > .tab-pane").forEach(p=>p.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+}
+
+/* =============================================================================
+   SAMPLE DATASET — 4 subsystems, 12 hazards, 18 requirements
+   ============================================================================= */
+const SAMPLE = {
+  /* Canonical SEDAC sample: UAS-GCS-117 Tactical Ground Control Station Mk-II.
+     21 requirements (18 safety), 12 hazards, 1 project record.
+     HAZ-009 is intentionally uncovered; REQ-020 and REQ-021 are intentionally
+     orphan safety requirements — both demonstrate GapAnalysis findings. */
+  requirementsCSV: `req_id,source,type,text,is_safety,parent_req_id,traced_hazard_ids
+REQ-001,SSS-3.2.1,safety,The battery management system shall open the main contactor within 50 ms of any cell exceeding 65 C.,true,,HAZ-001
+REQ-002,SSS-3.2.2,safety,The GCS shall provide a thermal annunciation to the operator when any battery cell exceeds 55 C.,true,REQ-001,HAZ-001
+REQ-003,SSS-3.4.1,safety,The launcher shall require two independent arming inputs before any hydraulic pressurization.,true,,HAZ-002
+REQ-004,SSS-3.4.2,safety,The launcher shall inhibit release if the vehicle arming interlock is not confirmed within 3 s of launch command.,true,REQ-003,HAZ-002
+REQ-005,SSS-3.5.1,safety,The datalink shall detect loss of link within 2 s and initiate a pre-programmed lost-link procedure.,true,,HAZ-003
+REQ-006,SSS-3.5.2,safety,The vehicle shall maintain altitude within +/- 30 ft for a minimum of 60 s following datalink loss.,true,REQ-005,HAZ-003
+REQ-007,SSS-3.6.1,safety,The navigation system shall detect GPS anomalies within 5 s and fall back to inertial/visual odometry.,true,,HAZ-004
+REQ-008,SSS-3.6.2,performance,The navigation solution shall achieve 10 m CEP at all times.,false,,HAZ-004
+REQ-009,SSS-3.7.1,safety,The shelter HVAC system shall provide redundant cooling sufficient to maintain operator ambient below 28 C.,true,,HAZ-005
+REQ-010,SSS-3.8.1,safety,The propulsion system shall require a physical red-tag lockout prior to any maintenance access.,true,,HAZ-006
+REQ-011,SSS-3.8.2,safety,The ESC shall discharge internal capacitors to below 5 V within 60 s of power-off.,true,REQ-010,HAZ-006
+REQ-012,SSS-3.9.1,safety,Flight software shall be stored in two independent flash banks with CRC verification at boot.,true,,HAZ-007
+REQ-013,SSS-3.9.2,safety,The autopilot watchdog shall trigger a safe-state reversion within 200 ms of detected software fault.,true,REQ-012,HAZ-007
+REQ-014,SSS-3.10.1,safety,All refueling operations shall use a grounded quick-disconnect with a 5 m ignition exclusion zone.,true,,HAZ-008
+REQ-015,SSS-3.12.1,safety,Onboard radar emissions shall be suppressed during servo calibration test modes.,true,,HAZ-010
+REQ-016,SSS-3.13.1,safety,All transport cases exceeding 50 lb shall be handled by two personnel using lift assist devices.,true,,HAZ-011
+REQ-017,SSS-3.14.1,safety,Cryptographic key material shall be zeroized from volatile memory within 30 s of power-off sequence start.,true,,HAZ-012
+REQ-018,SSS-3.3.1,functional,The GCS shall provide a tactical operator display with moving-map and vehicle telemetry.,false,,
+REQ-019,SSS-3.3.2,functional,The GCS shall support simultaneous control of up to four air vehicles.,false,,
+REQ-020,SSS-3.15.1,safety,All safety-critical software shall be developed to DO-178C Level C or higher.,true,,
+REQ-021,SSS-3.15.2,safety,The flight termination subsystem shall meet MIL-HDBK-516 aircraft worthiness criteria.,true,,`,
+  hazardsCSV: `hazard_id,title,description,system,subsystem,phase,severity_initial,probability_initial,severity_residual,probability_residual,status,cause_ids,effect_ids,control_ids,notes
+HAZ-001,Lithium battery thermal runaway,Cell venting and fire in GCS power pack during sustained field operation,GCS,Power,operation,I,C,II,D,mitigated,CSE-001|CSE-002,EFF-001,CTL-001|CTL-002,Redundant cell-level fusing; operator thermal monitoring
+HAZ-002,Uncommanded vehicle motion at launch,Catapult releases before arming interlock confirmed,Launcher,Hydraulic,test,I,B,II,D,mitigated,CSE-003,EFF-002,CTL-003|CTL-004,Two-stage arming with key-switch interlock
+HAZ-003,Loss of datalink during terminal approach,RF datalink dropout below 500 ft AGL yields autonomous fallback misbehavior,Airframe,Comms,operation,II,B,III,C,mitigated,CSE-004|CSE-005,EFF-003,CTL-005,Lost-link return-to-home + altitude hold
+HAZ-004,GPS spoofing leads to navigation deviation,Adversary GPS injection causes flight path error during operations,Airframe,Navigation,operation,II,C,III,D,mitigated,CSE-006,EFF-004,CTL-006|CTL-007,Multi-constellation GNSS + inertial coast
+HAZ-005,Operator heat stress in enclosed shelter,Shelter HVAC failure causes operator fatigue and degraded decision-making,GCS,Environmental,operation,III,B,III,D,mitigated,CSE-007,EFF-005,CTL-008,Redundant HVAC + mandatory 30-min rotations
+HAZ-006,Propeller strike during ground handling,Inadvertent prop spin-up during maintenance due to residual stored energy,Airframe,Propulsion,maintenance,I,D,II,E,mitigated,CSE-008,EFF-006,CTL-009,Red-tag lockout procedure + capacitor drain 60 s
+HAZ-007,Flight software CRC corruption,Bit flip in non-ECC flash yields undefined autopilot state,Airframe,Flight SW,operation,I,D,III,E,mitigated,CSE-009,EFF-007,CTL-010|CTL-011,Dual-bank image with CRC on boot + watchdog
+HAZ-008,Fuel spill during hot-refuel,Leak at quick-disconnect causes fire hazard near operators,Support,Fueling,operation,II,C,III,E,mitigated,CSE-010,EFF-008,CTL-012,Grounding strap + 5 m ignition exclusion zone
+HAZ-009,Parachute recovery failure,Emergency chute fails to deploy; vehicle impacts populated area,Airframe,Recovery,operation,I,D,I,E,open,CSE-011,EFF-009,,Uncovered hazard — no safety requirement traces yet
+HAZ-010,EMI from onboard radar couples to servo loop,Radar transmit couples to servo feedback; control-surface jitter,Airframe,Avionics,test,II,C,III,D,mitigated,CSE-012,EFF-010,CTL-013,Shielded harness + ferrite on servo feedback
+HAZ-011,Transport case drop onto operator foot,Case tips during unload; crush injury,Support,Logistics,deployment,III,C,IV,D,mitigated,CSE-013,EFF-011,CTL-014,Two-person lift mandate + steel-toe PPE
+HAZ-012,Cryptographic key material exposure,Zeroize routine fails to clear keys in RAM prior to transport,GCS,Security,disposal,II,D,III,E,mitigated,CSE-014,EFF-012,CTL-015,Cryptographic erase + physical destruction protocol`,
+  projectCSV: `program_id,system_name,contractor,contract_no,classification,preparer,approver,date
+UAS-GCS-117,Tactical Ground Control Station Mk-II,SEDAC LLC,W15P7T-26-D-0042,UNCLASSIFIED,A. Ryan,J. Dearman,2026-04-22`,
+}
+
+function loadSample(){
+  /* DEMO MODE: always loads the bundled UAS-GCS-117 sample. The upload slots
+     no longer exist in the DOM, so we skip slot-class manipulation. */
+  MODEL.reqRows = parseCSV(SAMPLE.requirementsCSV);
+  MODEL.hazRows = parseCSV(SAMPLE.hazardsCSV);
+  MODEL.prjRows = parseCSV(SAMPLE.projectCSV);
+  log(`Loaded UAS-GCS-117 demo dataset: ${MODEL.reqRows.rows.length} reqs, ${MODEL.hazRows.rows.length} hazards`, "ok");
+}
+
+
+/* =============================================================================
+   VALIDATION
+   ============================================================================= */
+function validate(){
+  const issues = [];
+  const schemaChecks = [];
+  const CHECK = (file, col, required) => {
+    const headers = MODEL[file+"Rows"]?.headers || [];
+    const ok = headers.includes(col);
+    schemaChecks.push({file, col, required, ok});
+    if (required && !ok){
+      issues.push({sev:"error", file, message:`Missing required column: ${col}`});
+    }
+  };
+  // requirements
+  ["req_id","text"].forEach(c=>CHECK("req",c,true));
+  ["source","type","is_safety","parent_req_id","traced_hazard_ids"].forEach(c=>CHECK("req",c,false));
+  // hazards
+  ["hazard_id","title"].forEach(c=>CHECK("haz",c,true));
+  ["description","system","subsystem","phase","severity_initial","probability_initial",
+   "severity_residual","probability_residual","status"].forEach(c=>CHECK("haz",c,false));
+  // project
+  if (MODEL.prjRows){
+    ["program_id","system_name","contractor","classification","preparer","approver","date"]
+      .forEach(c=>CHECK("prj",c,false));
+  }
+  // per-row: hazard severity/probability domain
+  const sevDomain = new Set(["I","II","III","IV"]);
+  const probDomain = new Set(["A","B","C","D","E"]);
+  (MODEL.hazRows?.rows || []).forEach((r,i)=>{
+    ["severity_initial","severity_residual"].forEach(c=>{
+      const v = (r[c]||"").toUpperCase();
+      if (v && !sevDomain.has(v)) issues.push({sev:"error",file:"haz",message:`Row ${i+2}: ${c}=${v||"(empty)"} — expected I|II|III|IV`});
+    });
+    ["probability_initial","probability_residual"].forEach(c=>{
+      const v = (r[c]||"").toUpperCase();
+      if (v && !probDomain.has(v)) issues.push({sev:"error",file:"haz",message:`Row ${i+2}: ${c}=${v||"(empty)"} — expected A|B|C|D|E`});
+    });
+  });
+  // requirement foreign keys
+  const hzIds = new Set((MODEL.hazRows?.rows || []).map(r=>r.hazard_id));
+  (MODEL.reqRows?.rows || []).forEach((r,i)=>{
+    splitList(r.traced_hazard_ids).forEach(hid=>{
+      if (!hzIds.has(hid)) issues.push({sev:"warn",file:"req",
+        message:`Row ${i+2} (${r.req_id}): traced hazard ${hid} not found in hazards.csv`});
+    });
+  });
+  return {issues, schemaChecks};
+}
+
+
+/* =============================================================================
+   RUN ANALYSIS
+   ============================================================================= */
+function runAnalysis(){
+  log("Starting SRHA analysis…");
+  /* Demo v2: panels are always visible; no display toggling needed. */
+
+  // Validation
+  const {issues, schemaChecks} = validate();
+  renderMetaGrid();
+  renderValAlerts(issues);
+  renderSchemaTable(schemaChecks);
+  renderDataPreviews();
+
+  const hasErrors = issues.some(i=>i.sev==="error");
+  if (hasErrors){
+    log(`Validation found ${issues.filter(i=>i.sev==="error").length} errors. Analysis halted.`, "err");
+    return;
+  }
+  log(`Validation passed (${issues.filter(i=>i.sev==="warn").length} warnings)`, "ok");
+
+  // Build objects
+  const reqs = MODEL.reqRows.rows.map(r=>({
+    req_id: r.req_id, source: r.source || "", type: (r.type||"functional").toLowerCase(),
+    text: r.text || "",
+    is_safety: ["true","yes","y","1","safety"].includes((r.is_safety||"").toLowerCase()),
+    parent_req_id: r.parent_req_id || "",
+    traced_hazard_ids: splitList(r.traced_hazard_ids),
+  }));
+  const hazards = MODEL.hazRows.rows.map(r=>{
+    const sI = (r.severity_initial||"IV").toUpperCase(), pI = (r.probability_initial||"E").toUpperCase();
+    const sR = (r.severity_residual||sI).toUpperCase(), pR = (r.probability_residual||pI).toUpperCase();
+    return {
+      hazard_id: r.hazard_id, title: r.title || "", description: r.description||"",
+      system: r.system||"", subsystem: r.subsystem||"", phase: r.phase||"",
+      severity_initial: sI, probability_initial: pI,
+      severity_residual: sR, probability_residual: pR,
+      status: (r.status||"open").toLowerCase(),
+      rac_initial: rac(sI,pI), rac_residual: rac(sR,pR),
+      rac_rank_init: RAC_RANK[rac(sI,pI)], rac_rank_resid: RAC_RANK[rac(sR,pR)],
+    };
+  });
+  const project = MODEL.prjRows?.rows?.[0] || {};
+
+  // SRHA analysis (SysML ConstraintBlocks)
+  const hzById = Object.fromEntries(hazards.map(h=>[h.hazard_id,h]));
+  // RequirementHazardTrace
+  const traceMatrix = {};       // traceMatrix[req_id][hazard_id] = 0|1
+  reqs.forEach(r=>{
+    traceMatrix[r.req_id] = {};
+    hazards.forEach(h=>{ traceMatrix[r.req_id][h.hazard_id] = r.traced_hazard_ids.includes(h.hazard_id) ? 1 : 0; });
+  });
+  // Coverage
+  const coverageByReq = {};
+  reqs.forEach(r=>{
+    coverageByReq[r.req_id] = r.traced_hazard_ids.filter(h=>hzById[h]).length;
+  });
+  const coverageByHazard = {};
+  hazards.forEach(h=>{
+    const safety = reqs.filter(r=>r.is_safety && r.traced_hazard_ids.includes(h.hazard_id)).length;
+    const any    = reqs.filter(r=>                r.traced_hazard_ids.includes(h.hazard_id)).length;
+    coverageByHazard[h.hazard_id] = {safety, any};
+  });
+  // RACRollupByRequirement
+  const reqRAC = {};
+  reqs.forEach(r=>{
+    const traced = r.traced_hazard_ids.map(h=>hzById[h]).filter(Boolean);
+    const maxI = traced.reduce((m,h)=>Math.max(m, h.rac_rank_init), 0);
+    const maxR = traced.reduce((m,h)=>Math.max(m, h.rac_rank_resid), 0);
+    reqRAC[r.req_id] = {
+      maxInitial: invRank(maxI), maxResidual: invRank(maxR),
+      delta: maxI - maxR, traced: traced.length,
+    };
+  });
+  // GapAnalysis
+  const uncovered = hazards.filter(h=>coverageByHazard[h.hazard_id].safety === 0 && h.rac_rank_init >= 2);
+  const orphans   = reqs.filter(r=>r.is_safety && coverageByReq[r.req_id] === 0);
+  const totalInitRank = hazards.reduce((s,h)=>s+h.rac_rank_init,0);
+  const uncoveredRank = uncovered.reduce((s,h)=>s+h.rac_rank_init,0);
+  const GRI = totalInitRank ? uncoveredRank/totalInitRank : 0;
+
+  MODEL.reqs = reqs;
+  MODEL.hazards = hazards;
+  MODEL.project = project;
+  MODEL.analysis = {
+    traceMatrix, coverageByReq, coverageByHazard, reqRAC,
+    uncovered: uncovered.map(h=>h.hazard_id),
+    orphans: orphans.map(r=>r.req_id),
+    gapRiskIndex: GRI,
+    counts: {
+      reqs: reqs.length, safetyReqs: reqs.filter(r=>r.is_safety).length,
+      hazards: hazards.length,
+      covered: hazards.length - uncovered.length,
+      uncovered: uncovered.length,
+      traceLinks: Object.values(traceMatrix).reduce((s,row)=>s+Object.values(row).reduce((a,b)=>a+b,0),0),
+    }
+  };
+
+  renderResults();
+  renderVisualizations();
+  renderDrilldownInit();
+  renderGapTables();
+  renderSensitivityInit();
+  renderInsights();
+
+  document.getElementById("btn-export").disabled = false;
+  // Set topbar classification + prefill report meta
+  const cls = (project.classification || "UNMARKED").toUpperCase();
+  document.getElementById("top-class").textContent = cls;
+  document.getElementById("rm-program").value    = project.program_id    || "DEMO-001";
+  document.getElementById("rm-system").value     = project.system_name   || "Demonstration System";
+  document.getElementById("rm-contractor").value = project.contractor    || "SEDAC LLC";
+  document.getElementById("rm-contract").value   = project.contract_no   || "—";
+  document.getElementById("rm-class").value      = cls;
+  document.getElementById("rm-preparer").value   = project.preparer      || "";
+  document.getElementById("rm-approver").value   = project.approver      || "";
+  document.getElementById("rm-date").value       = project.date          || new Date().toISOString().slice(0,10);
+
+  /* Demo v2: publish success status to the top-of-page banner. */
+  const c = MODEL.analysis.counts;
+  const gri = (MODEL.analysis.gapRiskIndex*100).toFixed(2);
+  setDemoStatus("ready",
+    `<span class="dot"></span><strong>DEMO READY</strong> · UAS-GCS-117 · `
+    + `${c.reqs} requirements · ${c.hazards} hazards · ${c.safetyReqs} safety-classified · `
+    + `Gap Risk Index <strong>${gri}%</strong> · `
+    + `${c.uncovered} uncovered · ${MODEL.analysis.orphans.length} orphan safety req(s) · `
+    + `<a href="#§04-results" onclick="document.getElementById('results-panel').scrollIntoView({behavior:'smooth'});return false;">Jump to results ↓</a>`);
+  log("SRHA complete — demo dashboard is live.", "ok");
+}
+
+function invRank(r){ return {4:"High",3:"Serious",2:"Medium",1:"Low",0:"—"}[r] || "—"; }
+
+
+/* =============================================================================
+   RENDERERS
+   ============================================================================= */
+function renderMetaGrid(){
+  const g = document.getElementById("meta-grid");
+  g.innerHTML = "";
+  const items = [
+    ["Requirements", MODEL.reqRows?.rows?.length ?? 0],
+    ["Hazards",      MODEL.hazRows?.rows?.length ?? 0],
+    ["Safety reqs",  (MODEL.reqRows?.rows || []).filter(r=>["true","yes","y","1","safety"].includes((r.is_safety||"").toLowerCase())).length],
+    ["Program",      MODEL.prjRows?.rows?.[0]?.program_id || "—"],
+  ];
+  items.forEach(([k,v])=>{
+    const el = document.createElement("div");
+    el.className = "meta-item";
+    el.innerHTML = `<div class="m-label">${esc(k)}</div><div class="m-val">${esc(v)}</div>`;
+    g.appendChild(el);
+  });
+}
+
+function renderValAlerts(issues){
+  const c = document.getElementById("val-alerts"); c.innerHTML = "";
+  const errs = issues.filter(i=>i.sev==="error");
+  const warns = issues.filter(i=>i.sev==="warn");
+  if (errs.length){
+    c.innerHTML += `<div class="alert alert-danger"><span class="alert-icon">!</span><div><strong>${errs.length} validation error${errs.length===1?"":"s"}</strong>: ${esc(errs.slice(0,3).map(e=>e.message).join("; "))}${errs.length>3?` (+${errs.length-3} more)`:""}</div></div>`;
+  }
+  if (warns.length){
+    c.innerHTML += `<div class="alert alert-warn"><span class="alert-icon">~</span><div><strong>${warns.length} warning${warns.length===1?"":"s"}</strong>: ${esc(warns.slice(0,3).map(e=>e.message).join("; "))}${warns.length>3?` (+${warns.length-3} more)`:""}</div></div>`;
+  }
+  if (!errs.length && !warns.length){
+    c.innerHTML = `<div class="alert alert-ok"><span class="alert-icon">✓</span><div>All schema checks passed.</div></div>`;
+  }
+}
+
+function renderSchemaTable(checks){
+  const b = document.getElementById("schema-body"); b.innerHTML = "";
+  const fileLabel = {req:"requirements",haz:"hazards",prj:"project"};
+  checks.forEach(c=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${esc(fileLabel[c.file])}.csv</td><td>${esc(c.col)}</td><td>${c.required?"yes":"no"}</td>`
+      + `<td>${c.ok ? '<span class="badge badge-low">present</span>' : (c.required?'<span class="badge badge-high">missing</span>':'<span class="badge badge-gray">absent</span>')}</td>`;
+    b.appendChild(tr);
+  });
+}
+
+function renderDataPreviews(){
+  const render = (tblId, rows) => {
+    const t = document.getElementById(tblId);
+    if (!rows || !rows.length){ t.innerHTML = "<thead><tr><th>—</th></tr></thead><tbody><tr><td>no data</td></tr></tbody>"; return; }
+    const headers = Object.keys(rows[0]);
+    const head = headers.map(h=>`<th>${h}</th>`).join("");
+    const body = rows.slice(0,20).map(r=>"<tr>"+headers.map(h=>`<td>${esc((r[h]||"").toString().slice(0,80))}</td>`).join("")+"</tr>").join("");
+    const escHead = headers.map(h=>`<th>${esc(h)}</th>`).join("");
+    t.innerHTML = `<thead><tr>${escHead}</tr></thead><tbody>${body}</tbody>`;
+  };
+  render("tbl-req", MODEL.reqRows?.rows);
+  render("tbl-haz", MODEL.hazRows?.rows);
+  render("tbl-prj", MODEL.prjRows?.rows);
+}
+
+function renderResults(){
+  const a = MODEL.analysis;
+  const g = document.getElementById("result-grid");
+  g.innerHTML = "";
+  const GRI = a.gapRiskIndex;
+  const GRIFlag = GRI >= 0.2 ? "high" : GRI >= 0.1 ? "serious" : GRI > 0 ? "medium" : "low";
+  const items = [
+    {lbl:"Requirements",        val:a.counts.reqs,                            sub:"total records"},
+    {lbl:"Safety reqs",         val:a.counts.safetyReqs,                      sub:`${((a.counts.safetyReqs/a.counts.reqs)*100).toFixed(0)}% of total`,                       flag:"medium"},
+    {lbl:"Hazards",             val:a.counts.hazards,                         sub:"identified"},
+    {lbl:"Hazards covered",     val:a.counts.covered,                         sub:`${a.counts.uncovered} uncovered`,                                                         flag:a.counts.uncovered===0?"low":(a.counts.uncovered<=2?"medium":"serious")},
+    {lbl:"Trace links",         val:a.counts.traceLinks,                      sub:"requirement × hazard"},
+    {lbl:"Gap Risk Index",      val:(GRI*100).toFixed(1)+"%",                 sub:"uncovered RAC-rank share",                                                                flag:GRIFlag},
+  ];
+  items.forEach(it=>{
+    const el = document.createElement("div");
+    el.className = "result-card" + (it.flag?` flag-${it.flag}`:"");
+    el.innerHTML = `<div class="r-label">${esc(it.lbl)}</div><div class="r-val">${esc(it.val)}</div><div class="r-sub">${esc(it.sub)}</div>`;
+    g.appendChild(el);
+  });
+
+  const b = document.getElementById("summary-body"); b.innerHTML = "";
+  const rows = [
+    ["Trace-link density",   (a.counts.traceLinks / (a.counts.reqs*a.counts.hazards)*100).toFixed(2)+"%",
+        "traceLinks / (reqs × hazards)"],
+    ["Safety requirement coverage",
+        a.counts.safetyReqs ? ((a.counts.safetyReqs - MODEL.analysis.orphans.length)/a.counts.safetyReqs*100).toFixed(1)+"%" : "—",
+        "safety reqs with ≥1 hazard trace"],
+    ["Hazard coverage (safety reqs only)",
+        a.counts.hazards ? (((a.counts.hazards - a.counts.uncovered)/a.counts.hazards)*100).toFixed(1)+"%" : "—",
+        "hazards with ≥1 safety requirement trace"],
+    ["Orphan safety reqs",   MODEL.analysis.orphans.length, "is_safety=true but no hazard trace"],
+    ["Uncovered hazards",    a.counts.uncovered, "RAC ≥ Medium with 0 safety-req coverage"],
+    ["RAC reduction (avg)",  avgRACDelta().toFixed(2), "avg rank delta over safety-req-traced hazards"],
+  ];
+  rows.forEach(r=>{
+    b.insertAdjacentHTML("beforeend",
+      `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`);
+  });
+}
+
+function avgRACDelta(){
+  const arr = MODEL.hazards
+    .filter(h=>MODEL.analysis.coverageByHazard[h.hazard_id].safety > 0)
+    .map(h=>h.rac_rank_init - h.rac_rank_resid);
+  if (!arr.length) return 0;
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
+}
+
+/* ------- Visualizations ------- */
+function destroyChart(id){ if (MODEL.charts[id]){ MODEL.charts[id].destroy(); delete MODEL.charts[id]; } }
+
+function renderVisualizations(){
+  /* Demo v2: destroy every existing chart first, then defer the
+     creation to the next animation frame so the browser has committed
+     layout for each canvas before Chart.js measures it. */
+  Object.keys(MODEL.charts).forEach(k=>{
+    try { MODEL.charts[k].destroy?.(); } catch(_){}
+    delete MODEL.charts[k];
+  });
+  if (typeof Chart === "undefined"){
+    showDemoError("Chart.js failed to load. If you are offline or behind a firewall that blocks cdnjs.cloudflare.com, please see the README for inlining instructions.");
+    return;
+  }
+  const _render = ()=> _renderCharts();
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(_render);
+  else setTimeout(_render, 0);
+}
+function _renderCharts(){
+  const hazards = MODEL.hazards;
+  // RAC distribution bar
+  const levels = ["High","Serious","Medium","Low"];
+  const init = levels.map(l=>hazards.filter(h=>h.rac_initial===l).length);
+  const resid = levels.map(l=>hazards.filter(h=>h.rac_residual===l).length);
+  destroyChart("rac");
+  MODEL.charts.rac = new Chart(document.getElementById("chart-rac"),{
+    type:"bar",
+    data:{labels:levels, datasets:[
+      {label:"Initial RAC", data:init,  backgroundColor:"#8E1420"},
+      {label:"Residual RAC",data:resid, backgroundColor:"#E8B820"},
+    ]},
+    options:{plugins:{legend:{position:"bottom",labels:{font:{family:"Courier New",size:10}}}},scales:{y:{beginAtZero:true,ticks:{font:{family:"Courier New",size:10}}},x:{ticks:{font:{family:"Courier New",size:10}}}}}
+  });
+
+  // Coverage pie
+  const safety = MODEL.reqs.filter(r=>r.is_safety).length;
+  const nonSafety = MODEL.reqs.length - safety;
+  const orphans = MODEL.analysis.orphans.length;
+  const safetyCovered = safety - orphans;
+  destroyChart("coverage");
+  MODEL.charts.coverage = new Chart(document.getElementById("chart-coverage"),{
+    type:"doughnut",
+    data:{labels:["Safety (covered)","Safety (orphan)","Non-safety"],
+      datasets:[{data:[safetyCovered, orphans, nonSafety], backgroundColor:["#1A3C8F","#C41E2E","#C8C8BE"]}]},
+    options:{plugins:{legend:{position:"bottom",labels:{font:{family:"Courier New",size:10}}}}}
+  });
+
+  // Top requirements by initial-RAC exposure
+  const reqExposure = MODEL.reqs.map(r=>({
+    req_id:r.req_id,
+    rank: MODEL.analysis.reqRAC[r.req_id]?.maxInitial || "—",
+    numeric: RAC_RANK[MODEL.analysis.reqRAC[r.req_id]?.maxInitial] || 0,
+    traced: MODEL.analysis.reqRAC[r.req_id]?.traced || 0,
+  })).sort((a,b)=>b.numeric-a.numeric).slice(0,10);
+  destroyChart("topreq");
+  MODEL.charts.topreq = new Chart(document.getElementById("chart-topreq"),{
+    type:"bar",
+    data:{labels: reqExposure.map(r=>r.req_id),
+      datasets:[{label:"Max initial RAC rank (4=High)", data:reqExposure.map(r=>r.numeric),
+        backgroundColor: reqExposure.map(r=>RAC_COLOR[r.rank] || "#C8C8BE")}]},
+    options:{indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{min:0,max:4,ticks:{font:{family:"Courier New",size:10}}},y:{ticks:{font:{family:"Courier New",size:10}}}}}
+  });
+
+  // Phase profile
+  const phases = {};
+  hazards.forEach(h=>{ const p = h.phase||"unspecified"; phases[p] = (phases[p]||0)+1; });
+  destroyChart("phase");
+  MODEL.charts.phase = new Chart(document.getElementById("chart-phase"),{
+    type:"bar",
+    data:{labels:Object.keys(phases), datasets:[{label:"Hazards", data:Object.values(phases), backgroundColor:"#1A3C8F"}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{font:{family:"Courier New",size:10}}},x:{ticks:{font:{family:"Courier New",size:10}}}}}
+  });
+
+  // Heatmap
+  const wrap = document.getElementById("heatmap-wrap");
+  const reqs = MODEL.reqs, hzs = hazards;
+  const head = "<th class='axis'>requirement ↓ / hazard →</th>" + hzs.map(h=>`<th title="${esc(h.title)}">${esc(h.hazard_id)}</th>`).join("");
+  const body = reqs.map(r=>{
+    const cells = hzs.map(h=>{
+      const t = MODEL.analysis.traceMatrix[r.req_id][h.hazard_id];
+      const cls = t===0 ? "hm-0" : (r.is_safety ? "hm-2" : "hm-1");
+      const title = esc(`${r.req_id} × ${h.hazard_id}: ${t===0?"no trace":(r.is_safety?"safety trace":"trace")}`);
+      return `<td class="${cls}" title="${title}">${t}</td>`;
+    }).join("");
+    return `<tr><td class="hm-row-label" title="${esc(r.text)}">${esc(r.req_id)}${r.is_safety?' <span class="badge badge-info" style="font-size:8px">safety</span>':""}</td>${cells}</tr>`;
+  }).join("");
+  wrap.innerHTML = `<table class="heatmap-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+/* ------- Drilldown ------- */
+function renderDrilldownInit(){
+  const sel = document.getElementById("req-select");
+  sel.innerHTML = MODEL.reqs.map(r=>`<option value="${esc(r.req_id)}">${esc(r.req_id)}${r.is_safety?" · safety":""} — ${esc((r.text||"").slice(0,70))}…</option>`).join("");
+  renderDrilldown();
+}
+function renderDrilldown(){
+  const rid = document.getElementById("req-select").value;
+  const r = MODEL.reqs.find(x=>x.req_id===rid); if (!r) return;
+  const rac = MODEL.analysis.reqRAC[rid];
+  const traced = r.traced_hazard_ids.map(h=>MODEL.hazards.find(x=>x.hazard_id===h)).filter(Boolean);
+  const c = document.getElementById("drill-content");
+  c.innerHTML = `
+    <div class="meta-grid">
+      <div class="meta-item"><div class="m-label">Source</div><div class="m-val" style="font-size:11px">${esc(r.source||"—")}</div></div>
+      <div class="meta-item"><div class="m-label">Type</div><div class="m-val" style="font-size:11px">${esc(r.type||"—")}</div></div>
+      <div class="meta-item"><div class="m-label">Safety</div><div class="m-val" style="font-size:11px">${r.is_safety?'<span class="badge badge-info">YES</span>':'<span class="badge badge-gray">no</span>'}</div></div>
+      <div class="meta-item"><div class="m-label">Traced hazards</div><div class="m-val" style="font-size:11px">${rac.traced}</div></div>
+    </div>
+    <div class="alert alert-info"><span class="alert-icon">§</span><div><em>${esc(r.text||"(no text)")}</em></div></div>
+    <div class="card-title">RAC roll-up</div>
+    <div class="result-grid">
+      <div class="result-card flag-${(rac.maxInitial||"low").toLowerCase()}"><div class="r-label">Max initial RAC</div><div class="r-val">${rac.maxInitial||"—"}</div><div class="r-sub">across ${rac.traced} hazards</div></div>
+      <div class="result-card flag-${(rac.maxResidual||"low").toLowerCase()}"><div class="r-label">Max residual RAC</div><div class="r-val">${rac.maxResidual||"—"}</div><div class="r-sub">after controls</div></div>
+      <div class="result-card flag-${rac.delta>=2?"low":rac.delta>=1?"medium":"serious"}"><div class="r-label">Δ rank</div><div class="r-val">${rac.delta}</div><div class="r-sub">positive = reduction</div></div>
+    </div>
+    <div class="card-title" style="margin-top:14px">Traced hazards</div>
+    ${traced.length ? `<div class="data-table-wrap"><table class="data-table">
+      <thead><tr><th>hazard_id</th><th>title</th><th>phase</th><th>initial</th><th>RAC init</th><th>residual</th><th>RAC resid</th></tr></thead>
+      <tbody>${traced.map(h=>`<tr>
+        <td>${esc(h.hazard_id)}</td><td>${esc(h.title)}</td><td>${esc(h.phase||"—")}</td>
+        <td>${esc(h.severity_initial)}-${esc(h.probability_initial)}</td>
+        <td><span class="badge badge-${h.rac_initial.toLowerCase()}">${esc(h.rac_initial)}</span></td>
+        <td>${esc(h.severity_residual)}-${esc(h.probability_residual)}</td>
+        <td><span class="badge badge-${h.rac_residual.toLowerCase()}">${esc(h.rac_residual)}</span></td>
+      </tr>`).join("")}</tbody></table></div>` : '<div class="alert alert-warn"><span class="alert-icon">!</span><div>No hazards traced to this requirement. If this is a safety requirement, it will appear as an orphan in the Gap Analysis.</div></div>'}
+  `;
+}
+
+/* ------- Gap tables ------- */
+function renderGapTables(){
+  const uncoveredHz = MODEL.analysis.uncovered.map(id=>MODEL.hazards.find(h=>h.hazard_id===id));
+  const t1 = document.getElementById("tbl-uncovered");
+  if (uncoveredHz.length){
+    t1.innerHTML = `<thead><tr><th>hazard_id</th><th>title</th><th>system</th><th>phase</th><th>RAC initial</th><th>status</th></tr></thead>
+      <tbody>${uncoveredHz.map(h=>`<tr>
+        <td>${esc(h.hazard_id)}</td><td>${esc(h.title)}</td><td>${esc(h.system)}${h.subsystem?" / "+esc(h.subsystem):""}</td>
+        <td>${esc(h.phase||"—")}</td>
+        <td><span class="badge badge-${h.rac_initial.toLowerCase()}">${esc(h.rac_initial)}</span></td>
+        <td>${esc(h.status)}</td>
+      </tr>`).join("")}</tbody>`;
+  } else {
+    t1.innerHTML = `<thead><tr><th>result</th></tr></thead><tbody><tr><td>✓ No uncovered hazards — every Medium-or-higher hazard has at least one safety-requirement trace.</td></tr></tbody>`;
+  }
+
+  const orphanReqs = MODEL.analysis.orphans.map(id=>MODEL.reqs.find(r=>r.req_id===id));
+  const t2 = document.getElementById("tbl-orphan");
+  if (orphanReqs.length){
+    t2.innerHTML = `<thead><tr><th>req_id</th><th>source</th><th>type</th><th>text</th></tr></thead>
+      <tbody>${orphanReqs.map(r=>`<tr>
+        <td>${esc(r.req_id)}</td><td>${esc(r.source)}</td><td>${esc(r.type)}</td>
+        <td>${esc((r.text||"").slice(0,120))}…</td>
+      </tr>`).join("")}</tbody>`;
+  } else {
+    t2.innerHTML = `<thead><tr><th>result</th></tr></thead><tbody><tr><td>✓ No orphan safety requirements — every safety requirement traces to at least one hazard.</td></tr></tbody>`;
+  }
+}
+
+/* ------- Sensitivity ------- */
+function renderSensitivityInit(){ applySensitivity(); }
+function applySensitivity(){
+  const sSev = +document.getElementById("sens-sev").value;
+  const sProb = +document.getElementById("sens-prob").value;
+  const sEff = +document.getElementById("sens-eff").value;
+  document.getElementById("sens-sev-val").textContent = sSev;
+  document.getElementById("sens-prob-val").textContent = sProb;
+  document.getElementById("sens-eff-val").textContent = sEff + "%";
+
+  const t = document.getElementById("tbl-sens");
+  const rows = MODEL.hazards.map(h=>{
+    const sNew = decrSev(h.severity_residual, sSev);
+    const pNew = decrProb(h.probability_residual, sProb);
+    let racNew = rac(sNew,pNew);
+    // Effectiveness uplift: if we push effectiveness, improve by one level if ≥ 50%.
+    if (sEff >= 50 && RAC_RANK[racNew] > 1){
+      const levels = ["Low","Medium","Serious","High"];
+      const idx = levels.indexOf(racNew) - 1;
+      if (idx >= 0) racNew = levels[idx];
+    }
+    return {h, racNew, sNew, pNew};
+  });
+  t.innerHTML = `<thead><tr><th>hazard_id</th><th>title</th><th>current residual</th><th>current RAC</th><th>simulated</th><th>simulated RAC</th><th>Δ rank</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td>${esc(r.h.hazard_id)}</td><td>${esc(r.h.title)}</td>
+      <td>${esc(r.h.severity_residual)}-${esc(r.h.probability_residual)}</td>
+      <td><span class="badge badge-${r.h.rac_residual.toLowerCase()}">${esc(r.h.rac_residual)}</span></td>
+      <td>${esc(r.sNew)}-${esc(r.pNew)}</td>
+      <td><span class="badge badge-${r.racNew.toLowerCase()}">${esc(r.racNew)}</span></td>
+      <td>${RAC_RANK[r.h.rac_residual]-RAC_RANK[r.racNew]}</td>
+    </tr>`).join("")}</tbody>`;
+}
+
+/* ------- Insights ------- */
+function renderInsights(){
+  const a = MODEL.analysis;
+  const list = document.getElementById("insight-list"); list.innerHTML = "";
+  const add = (kind, icon, text) => list.insertAdjacentHTML("beforeend",
+    `<li class="insight-item ${esc(kind)}"><span class="insight-icon">${esc(icon)}</span><div>${text}</div></li>`);
+
+  // #1 Gap Risk Index
+  const GRI = (a.gapRiskIndex*100).toFixed(1);
+  if (a.gapRiskIndex === 0){
+    add("ok","✓",`<strong>Gap Risk Index = 0%</strong>. Every identified hazard at Medium RAC or higher has at least one safety requirement traced. Good SRHA posture.`);
+  } else if (a.gapRiskIndex >= 0.2){
+    add("high","!",`<strong>Gap Risk Index = ${GRI}%</strong>. More than one-fifth of total initial RAC exposure is concentrated in hazards with no safety-requirement trace. Requirements work is required before SRR.`);
+  } else {
+    add("warn","~",`<strong>Gap Risk Index = ${GRI}%</strong>. Uncovered hazards contribute a ${GRI}% share of total initial RAC rank. Close these traces to reduce exposure.`);
+  }
+
+  // #2 Uncovered hazards
+  if (a.counts.uncovered > 0){
+    const hi = MODEL.hazards.filter(h=>a.uncovered.includes(h.hazard_id) && h.rac_rank_init >= 3);
+    if (hi.length){
+      add("high","◆",`<strong>${hi.length} Serious-or-High hazard${hi.length===1?"":"s"} with no safety requirement trace</strong>: ${hi.slice(0,3).map(h=>h.hazard_id).join(", ")}${hi.length>3?` (+${hi.length-3} more)`:""}. These are the highest-priority SRHA gaps.`);
+    }
+  }
+
+  // #3 Orphans
+  if (a.orphans.length > 0){
+    add("warn","◇",`<strong>${a.orphans.length} orphan safety requirement${a.orphans.length===1?"":"s"}</strong> (is_safety=true but no hazard traced): ${a.orphans.slice(0,4).join(", ")}${a.orphans.length>4?` (+${a.orphans.length-4} more)`:""}. Either link to an identified hazard or reclassify.`);
+  }
+
+  // #4 Dominant subsystem
+  const sys = {};
+  MODEL.hazards.forEach(h=>{ const s = h.system||"unspec"; sys[s] = (sys[s]||0) + h.rac_rank_init; });
+  const dom = Object.entries(sys).sort((a,b)=>b[1]-a[1])[0];
+  if (dom) add("info","◆",`<strong>${dom[0]}</strong> carries the largest share of initial RAC rank (${dom[1]} rank-points summed). Concentrate SRHA reviews on this subsystem first.`);
+
+  // #5 RAC reduction
+  const avgD = avgRACDelta().toFixed(2);
+  if (avgD > 1.0){
+    add("ok","↓",`Average RAC rank reduction per safety-requirement-traced hazard is <strong>${avgD}</strong> levels — controls are effective in concept.`);
+  } else if (avgD > 0){
+    add("info","↓",`Average RAC rank reduction is <strong>${avgD}</strong> levels per mitigated hazard. Consider adding stronger controls on residual Medium-or-higher RAC hazards.`);
+  } else {
+    add("warn","~",`Average RAC rank reduction is <strong>${avgD}</strong> — residual RAC values are not improving on initial values. Verify the residual severity/probability columns are populated.`);
+  }
+
+  // #6 Safety-requirement share
+  const share = (a.counts.safetyReqs/a.counts.reqs*100).toFixed(0);
+  if (a.counts.safetyReqs === 0){
+    add("high","!",`<strong>No requirements flagged as safety</strong>. Set <code>is_safety=true</code> in requirements.csv on the requirements that derive from hazard analyses, or SRHA cannot complete.`);
+  } else {
+    add("info","§",`${a.counts.safetyReqs} of ${a.counts.reqs} requirements (<strong>${share}%</strong>) are flagged as safety requirements. Typical defense programs show 8–20%; anything outside that band warrants review.`);
+  }
+}
+
+
+/* =============================================================================
+   EXPORTS
+   ============================================================================= */
+function exportJSON(){
+  const out = {
+    task: "203_SRHA",
+    generated_at: new Date().toISOString(),
+    project: MODEL.project,
+    requirements: MODEL.reqs,
+    hazards: MODEL.hazards,
+    analysis: MODEL.analysis,
+  };
+  const blob = new Blob([JSON.stringify(out,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "task_203_srha_analysis.json"; a.click();
+}
+function exportTraceCSV(){
+  const hzs = MODEL.hazards, rows = MODEL.reqs;
+  const hdr = ["req_id","is_safety", ...hzs.map(h=>h.hazard_id)];
+  const body = rows.map(r=>[r.req_id, r.is_safety?"true":"false",
+    ...hzs.map(h=>MODEL.analysis.traceMatrix[r.req_id][h.hazard_id])].join(","));
+  const csv = hdr.join(",") + "\n" + body.join("\n") + "\n";
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "task_203_trace_matrix.csv"; a.click();
+}
+function exportReqCoverageCSV(){
+  const hdr = ["req_id","is_safety","traced_hazards","max_initial_rac","max_residual_rac","rank_delta"];
+  const body = MODEL.reqs.map(r=>{
+    const rac = MODEL.analysis.reqRAC[r.req_id];
+    return [r.req_id, r.is_safety?"true":"false", rac.traced, rac.maxInitial, rac.maxResidual, rac.delta].join(",");
+  });
+  const csv = hdr.join(",") + "\n" + body.join("\n") + "\n";
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "task_203_requirement_coverage.csv"; a.click();
+}
+
+
+/* =============================================================================
+   REPORT MODAL + PDF EXPORT (via Python backend)
+   ============================================================================= */
+function openReportModal(){ openCtaModal(); }
+function closeReportModal(){ document.getElementById("report-modal").classList.remove("open"); }
+
+async function generatePDF(){
+  /* DEMO MODE: PDF generation requires the SEDAC Python backend and is only
+     available in the full version. Surface the CTA modal instead. */
+  openCtaModal();
+}
+function openCtaModal(){ document.getElementById("cta-modal").classList.add("open"); }
+function closeCtaModal(){ document.getElementById("cta-modal").classList.remove("open"); }
+
+/* Initial state */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const dateEl = document.getElementById("rm-date");
+  if (dateEl) dateEl.value = new Date().toISOString().slice(0,10);
+
+  setDemoStatus("running", `<span class="dot"></span>Loading UAS-GCS-117 demo dataset and running SRHA…`);
+
+  /* Chart.js availability check — runs a tick after DOMContentLoaded
+     to give the CDN script a chance to finish loading even on slow links. */
+  const startDemo = () => {
+    try {
+      loadSample();
+      runAnalysis();
+    } catch (e) {
+      console.error(e);
+      showDemoError(`Auto-run failed: ${e.message}. Click ↻ Reset Demo View or refresh the page.`);
+    }
+  };
+
+  if (typeof Chart === "undefined"){
+    /* Retry after 400 ms in case Chart.js is still loading from the CDN */
+    setTimeout(()=>{
+      if (typeof Chart === "undefined"){
+        showDemoError("Chart.js did not load. Check your internet connection or ad-blocker, then click ↻ Reset Demo View.");
+        /* Still run the non-chart parts so text analysis is visible */
+        try { loadSample(); runAnalysis(); } catch(_){}
+      } else {
+        startDemo();
+      }
+    }, 400);
+  } else {
+    startDemo();
+  }
+
+  /* Close the CTA modal when its backdrop is clicked */
+  const modal = document.getElementById("cta-modal");
+  if (modal) modal.addEventListener("click", (ev)=>{ if (ev.target === modal) closeCtaModal(); });
+
+  /* Keyboard shortcut: Esc closes modals */
+  document.addEventListener("keydown", (ev)=>{
+    if (ev.key === "Escape"){
+      closeCtaModal();
+      const rm = document.getElementById("report-modal");
+      if (rm) rm.classList.remove("open");
+    }
+  });
+});
+</script>
+
+<!-- =========================================================================
+     CTA MODAL (Request Full Version)
+     ========================================================================= -->
+<div id="cta-modal" role="dialog" aria-modal="true" aria-labelledby="cta-title">
+  <div id="cta-box">
+    <span class="ribbon">Full Version</span>
+    <h2 id="cta-title">Request the SEDAC Task 203 Full Build</h2>
+    <p>
+      This demo runs entirely in your browser on a reference dataset. The full
+      SEDAC Task 203 build adds your own program data, validated CSV schemas,
+      the complete FastAPI backend, MIL-STD 882E-formatted PDF export, the
+      other 23 task modules in the suite, and the shared branding + governance
+      framework.
+    </p>
+    <p style="color:var(--muted);font-size:12px">
+      Delivered as a Python package you run on your own machine — no uploads,
+      no cloud dependency, no program data leaves your device.
+    </p>
+    <div class="contact-grid">
+      <div><strong>SEDAC LLC</strong> · CAGE 18S33 · UEI FFYTDK9ZBK48</div>
+      <div>Huntsville, Alabama</div>
+      <div>Email: <a href="mailto:contact@sedacllc.com">contact@sedacllc.com</a></div>
+      <div>Reference: MIL-STD-882E Task Tools v1.0</div>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:contact@sedacllc.com?subject=SEDAC%20Task%20203%20Full%20Version%20Inquiry">◆ Email SEDAC</a>
+      <button class="btn btn-secondary" onclick="closeCtaModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
