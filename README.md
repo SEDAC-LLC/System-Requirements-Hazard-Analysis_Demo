@@ -47,7 +47,7 @@ SEDAC LLC is not responsible for data handling practices of downstream users or 
 Attribution
 When citing or referencing these tools in reports, papers, or deliverables, use:
 
-SEDAC LLC Analysis Tool Suite (CAGE: 18S33). System Reqirements Hazard Analysis Demo (SRHA). Available at github.com/SEDAC-LLC. Licensed CC BY-NC 4.0.
+SEDAC LLC Analysis Tool Suite (CAGE: 18S33). System Reqirements Hazard Analysis (SRHA) Task 203 Demo. Available at github.com/SEDAC-LLC. Licensed CC BY-NC 4.0.
 
 For NASA TLX implementation specifically:
 
